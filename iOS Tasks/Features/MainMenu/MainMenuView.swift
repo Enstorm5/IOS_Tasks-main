@@ -6,14 +6,10 @@ struct MainMenuView: View {
     @Binding var bestLightItUp: Int
     let onTapFrenzySelected: () -> Void
     
-    let brutalistDark = Color(red: 15/255, green: 23/255, blue: 42/255) // #0F172A
-    let brutalistBg = Color(red: 241/255, green: 245/255, blue: 249/255) // #F1F5F9
-    let cautionYellow = Color(red: 250/255, green: 204/255, blue: 21/255) // #FACC15
-    
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                pixelBackground()
+                tactilePixelBackground()
                 
                 ScrollView {
                     VStack(spacing: 32) {
@@ -33,23 +29,6 @@ struct MainMenuView: View {
         .background(Color.white)
     }
     
-    // Pixel dotted background
-    func pixelBackground() -> some View {
-        Canvas { context, size in
-            let dotSize: CGFloat = 1
-            let spacing: CGFloat = 16
-            
-            context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(Color(red: 248/255, green: 250/255, blue: 252/255)))
-            
-            for x in stride(from: 0, to: size.width, by: spacing) {
-                for y in stride(from: 0, to: size.height, by: spacing) {
-                    let rect = CGRect(x: x, y: y, width: dotSize, height: dotSize)
-                    context.fill(Path(rect), with: .color(Color(red: 203/255, green: 213/255, blue: 225/255))) // #cbd5e1
-                }
-            }
-        }
-        .ignoresSafeArea()
-    }
     
     // Top Bar
     func topBar() -> some View {
@@ -165,22 +144,8 @@ struct MainMenuView: View {
                     .border(brutalistDark, width: 1.5)
                     .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
             )
-            .overlay(
-                GeometryReader { geo in
-                    Path { path in
-                        // Top Leading Bracket
-                        path.move(to: CGPoint(x: 8, y: 4))
-                        path.addLine(to: CGPoint(x: 4, y: 4))
-                        path.addLine(to: CGPoint(x: 4, y: 8))
-                        
-                        // Bottom Trailing Bracket
-                        path.move(to: CGPoint(x: geo.size.width - 8, y: geo.size.height - 4))
-                        path.addLine(to: CGPoint(x: geo.size.width - 4, y: geo.size.height - 4))
-                        path.addLine(to: CGPoint(x: geo.size.width - 4, y: geo.size.height - 8))
-                    }
-                    .stroke(brutalistDark, lineWidth: 1.5)
-                }
-            )
+            .overlay(tactileUIAccent(alignment: .topLeading))
+            .overlay(tactileUIAccent(alignment: .bottomTrailing))
     }
     
     // Bottom Nav
