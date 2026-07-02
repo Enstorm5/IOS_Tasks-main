@@ -6,127 +6,207 @@ struct MainMenuView: View {
     @Binding var bestLightItUp: Int
     let onTapFrenzySelected: () -> Void
     
+    let brutalistDark = Color(red: 15/255, green: 23/255, blue: 42/255) // #0F172A
+    let brutalistBg = Color(red: 241/255, green: 245/255, blue: 249/255) // #F1F5F9
+    let cautionYellow = Color(red: 250/255, green: 204/255, blue: 21/255) // #FACC15
+    
     var body: some View {
-        ZStack {
-            // Modern dark gradient background
-            LinearGradient(
-                colors: [Color(.systemBackground), Color(.secondarySystemBackground)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+        VStack(spacing: 0) {
+            ZStack {
+                pixelBackground()
+                
+                ScrollView {
+                    VStack(spacing: 32) {
+                        heroSection()
+                    }
+                    .padding(.top, 80) // Space for top bar
+                    .padding(.bottom, 100) // Space for bottom bar
+                    .padding(.horizontal, 20)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            VStack(spacing: 35) {
-                VStack(spacing: 8) {
-                    Text("Collection")
-                        .font(.system(size: 38, weight: .black, design: .rounded))
-                        .tracking(3) // Modern letter-spacing
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.primary, .primary.opacity(0.7)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                    
-                    Text("Choose game")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+            bottomNavBar()
+        }
+        .overlay(topBar(), alignment: .top)
+        .ignoresSafeArea(.all, edges: .bottom)
+        .background(Color.white)
+    }
+    
+    // Pixel dotted background
+    func pixelBackground() -> some View {
+        Canvas { context, size in
+            let dotSize: CGFloat = 1
+            let spacing: CGFloat = 16
+            
+            context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(Color(red: 248/255, green: 250/255, blue: 252/255)))
+            
+            for x in stride(from: 0, to: size.width, by: spacing) {
+                for y in stride(from: 0, to: size.height, by: spacing) {
+                    let rect = CGRect(x: x, y: y, width: dotSize, height: dotSize)
+                    context.fill(Path(rect), with: .color(Color(red: 203/255, green: 213/255, blue: 225/255))) // #cbd5e1
                 }
-                .padding(.top, 40)
+            }
+        }
+        .ignoresSafeArea()
+    }
+    
+    // Top Bar
+    func topBar() -> some View {
+        HStack {
+            Text("ARCADE")
+                .font(.system(size: 20, weight: .black, design: .default))
+                .italic()
+                .foregroundColor(brutalistDark)
+            
+            Spacer()
+            
+            HStack(spacing: 12) {
+                Text("2,450 PTS")
+                    .font(.system(size: 11, weight: .black))
+                    .foregroundColor(brutalistDark)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(
+                        cautionYellow
+                            .border(brutalistDark, width: 2)
+                            .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                    )
                 
-                VStack(spacing: 20) {
-                    menuButton(
-                        title: "Tap Frenzy",
-                        subtitle: "Fast-paced rhythm clicking challenge",
-                        icon: "sparkles",
-                        bestScore: bestTapFrenzy,
-                        gradientColors: [.orange, .pink]
-                    ) {
-                        onTapFrenzySelected()
-                    }
-                    
-                    menuButton(
-                        title: "Light It Up",
-                        subtitle: "Precision puzzle matching game",
-                        icon: "lightbulb.fill",
-                        bestScore: bestLightItUp,
-                        gradientColors: [.purple, .blue]
-                    ) {
-                        currentRoute = .lightItUp
-                    }
-                }
-                .padding(.horizontal, 24)
+                Text("HELP")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(brutalistDark)
+                    .padding(.bottom, 2)
+                    .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.white)
+        .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
+    }
+    
+    // Hero Section
+    func heroSection() -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Rectangle()
+                    .fill(cautionYellow)
+                    .frame(width: 8, height: 24)
+                    .border(brutalistDark, width: 1)
                 
-                Spacer()
+                Text("FEATURED")
+                    .font(.system(size: 26, weight: .heavy))
+                    .foregroundColor(brutalistDark)
+                    .tracking(-1)
+            }
+            
+            VStack(spacing: 16) {
+                featuredCard(
+                    title: "TAP FRENZY",
+                    desc: "Tactical tapping challenge. Compete globally.",
+                    time: "REC: \(bestTapFrenzy)",
+                    action: { onTapFrenzySelected() }
+                )
+                
+                featuredCard(
+                    title: "LIGHT IT UP",
+                    desc: "High-speed reflex memory. Endless levels.",
+                    time: "REC: \(bestLightItUp)",
+                    action: { currentRoute = .lightItUp }
+                )
             }
         }
     }
     
-    private func menuButton(
-        title: String,
-        subtitle: String,
-        icon: String,
-        bestScore: Int,
-        gradientColors: [Color],
-        action: @escaping () -> Void
-    ) -> some View {
+    // Featured Card
+    func featuredCard(title: String, desc: String, time: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 16) {
-                // Featured Icon Asset Block
-                Image(systemName: icon)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .frame(width: 54, height: 54)
-                    .background(Color.white.opacity(0.15))
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(title)
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
-                        .lineLimit(1)
-                    
-                    // High score badge
-                    HStack(spacing: 4) {
-                        Image(systemName: "trophy.fill")
-                            .font(.caption2)
-                        Text("Record: \(bestScore)")
-                            .font(.caption2)
-                            .fontWeight(.bold)
+            tactileCard {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(alignment: .top) {
+                        Text(title)
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(brutalistDark)
+                        
+                        Spacer()
+                        
+                        Text(time)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(brutalistDark)
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.ultraThinMaterial)
-                    .environment(\.colorScheme, .dark) // Forces contrast on glass morphic badge
-                    .clipShape(Capsule())
-                    .padding(.top, 2)
+                    
+                    Text(desc)
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
+                        .multilineTextAlignment(.leading)
+                    
+                    HStack(spacing: 4) {
+                        Rectangle().fill(cautionYellow).frame(width: 6, height: 6).border(brutalistDark, width: 1)
+                        Rectangle().fill(brutalistDark).frame(width: 6, height: 6)
+                        Rectangle().fill(brutalistDark).frame(width: 6, height: 6)
+                    }
+                    .padding(.top, 4)
                 }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.6))
+                .padding(16)
             }
-            .padding(.all, 16)
-            .foregroundColor(.white)
-            .background(
-                LinearGradient(
-                    colors: gradientColors,
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .shadow(color: gradientColors[0].opacity(0.3), radius: 12, x: 0, y: 6)
         }
-        .buttonStyle(MenuButtonStyle()) // Custom press scaling
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    // Tactile Card Modifier
+    func tactileCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .background(
+                brutalistBg
+                    .border(brutalistDark, width: 1.5)
+                    .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+            )
+            .overlay(
+                GeometryReader { geo in
+                    Path { path in
+                        // Top Leading Bracket
+                        path.move(to: CGPoint(x: 8, y: 4))
+                        path.addLine(to: CGPoint(x: 4, y: 4))
+                        path.addLine(to: CGPoint(x: 4, y: 8))
+                        
+                        // Bottom Trailing Bracket
+                        path.move(to: CGPoint(x: geo.size.width - 8, y: geo.size.height - 4))
+                        path.addLine(to: CGPoint(x: geo.size.width - 4, y: geo.size.height - 4))
+                        path.addLine(to: CGPoint(x: geo.size.width - 4, y: geo.size.height - 8))
+                    }
+                    .stroke(brutalistDark, lineWidth: 1.5)
+                }
+            )
+    }
+    
+    // Bottom Nav
+    func bottomNavBar() -> some View {
+        HStack(spacing: 0) {
+            navItem(label: "Home", isSelected: true)
+            navItem(label: "Library", isSelected: false)
+            navItem(label: "Scores", isSelected: false)
+        }
+        .frame(height: 64)
+        .padding(.horizontal, 24)
+        .padding(.bottom, 20) // Home indicator
+        .background(Color.white)
+        .overlay(Rectangle().frame(height: 4).foregroundColor(brutalistDark), alignment: .top)
+    }
+    
+    func navItem(label: String, isSelected: Bool) -> some View {
+        Button(action: {}) {
+            Text(label.uppercased())
+                .font(.system(size: 11, weight: .black))
+                .foregroundColor(isSelected ? brutalistDark : Color(red: 71/255, green: 85/255, blue: 105/255))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(isSelected ? cautionYellow : Color.clear)
+                .border(isSelected ? brutalistDark : Color.clear, width: 1)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
