@@ -201,27 +201,7 @@ struct TapFrenzyView: View {
                 .overlay(uiAccent(alignment: .bottomTrailing))
             }
             .buttonStyle(PlainButtonStyle())
-            
-            // Technical Labels
-            Text("Target_ID: 00-PX9")
-                .font(.system(size: 9, weight: .black, design: .monospaced))
-                .foregroundColor(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .background(brutalistDark)
-                .offset(x: 100, y: -140)
-            
-            Text("Status: \(state.currentButtonColor == .grey ? "Restricted" : "Active")")
-                .font(.system(size: 9, weight: .black, design: .monospaced))
-                .foregroundColor(brutalistDark)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .background(
-                    Color.white
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                )
-                .offset(x: -80, y: 140)
+
         }
     }
     
@@ -289,49 +269,53 @@ struct TapFrenzyView: View {
                                 .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
                         }
                         
-                        // Action Button
-                        Button(action: { onGameAction(.startOrRestartGame) }) {
-                            HStack(spacing: 12) {
-                                Text(state.isGameOver ? "PLAY AGAIN" : "START GAME")
-                                    .font(.system(size: 22, weight: .black))
-                                    .italic()
-                                    .tracking(-1)
-                                
-                                Image(systemName: "play.fill")
-                            }
-                            .foregroundColor(brutalistDark)
-                            .padding(.vertical, 20)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                cautionYellow
-                                    .border(brutalistDark, width: 2)
-                                    .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                            )
-                            .overlay(
-                                Path { path in
-                                    path.move(to: CGPoint(x: 4, y: 0))
-                                    path.addLine(to: CGPoint(x: 0, y: 0))
-                                    path.addLine(to: CGPoint(x: 0, y: 4))
+                        // Action Buttons
+                        VStack(spacing: 16) {
+                            Button(action: { onGameAction(.startOrRestartGame) }) {
+                                HStack(spacing: 12) {
+                                    Text(state.isGameOver ? "PLAY AGAIN" : "START GAME")
+                                        .font(.system(size: 22, weight: .black))
+                                        .italic()
+                                        .tracking(-1)
+                                    
+                                    Image(systemName: "play.fill")
                                 }
-                                .stroke(brutalistDark, lineWidth: 1)
-                                .padding(4), alignment: .topLeading
-                            )
+                                .foregroundColor(brutalistDark)
+                                .padding(.vertical, 20)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    cautionYellow
+                                        .border(brutalistDark, width: 2)
+                                        .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                                )
+                                .overlay(
+                                    Path { path in
+                                        path.move(to: CGPoint(x: 4, y: 0))
+                                        path.addLine(to: CGPoint(x: 0, y: 0))
+                                        path.addLine(to: CGPoint(x: 0, y: 4))
+                                    }
+                                    .stroke(brutalistDark, lineWidth: 1)
+                                    .padding(4), alignment: .topLeading
+                                )
+                            }
+                            
+                            if state.isGameOver {
+                                Button(action: { currentRoute = .mainMenu }) {
+                                    Text("MAIN MENU")
+                                        .font(.system(size: 16, weight: .black))
+                                        .italic()
+                                        .tracking(-1)
+                                        .foregroundColor(brutalistDark)
+                                        .padding(.vertical, 16)
+                                        .frame(maxWidth: .infinity)
+                                        .background(
+                                            Color(red: 226/255, green: 232/255, blue: 240/255)
+                                                .border(brutalistDark, width: 2)
+                                                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                                        )
+                                }
+                            }
                         }
-                        
-                        // Status Bar
-                        HStack(spacing: 16) {
-                            Text("SYS_READY")
-                            Circle()
-                                .fill(Color.green)
-                                .frame(width: 8, height: 8)
-                                .scaleEffect(pulse ? 1.5 : 1.0)
-                                .opacity(pulse ? 0.5 : 1.0)
-                            Text("V.2.0.4")
-                        }
-                        .font(.system(size: 11, weight: .black, design: .monospaced))
-                        .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
-                        .tracking(1)
-                        .padding(.top, 16)
                     }
                     .padding(.horizontal, 32)
                     .padding(.bottom, 32)
