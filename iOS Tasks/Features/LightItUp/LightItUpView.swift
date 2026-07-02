@@ -1,185 +1,8 @@
 import SwiftUI
 import Combine
 
-// MARK: - Game Setup Config
-enum GameLevel: Int, CaseIterable {
-    case L1 = 1, L2, L3, L4
-    
-    var totalCards: Int {
-        switch self {
-        case .L1: return 3
-        case .L2: return 4
-        case .L3: return 6
-        case .L4: return 9
-        }
-    }
-    
-    var litDuration: Double {
-        switch self {
-        case .L1: return 1.5
-        case .L2: return 1.2
-        case .L3: return 1.0
-        case .L4: return 0.8
-        }
-    }
-    
-    var glowColor: Color {
-        switch self {
-        case .L1: return .yellow
-        case .L2: return .orange
-        case .L3: return .cyan
-        case .L4: return .purple
-        }
-    }
-    
-    var gridColumns: [GridItem] {
-        switch self {
-        case .L1: return Array(repeating: GridItem(.flexible(), spacing: 14), count: 3)
-        case .L2: return Array(repeating: GridItem(.flexible(), spacing: 14), count: 2)
-        case .L3: return Array(repeating: GridItem(.flexible(), spacing: 14), count: 3)
-        case .L4: return Array(repeating: GridItem(.flexible(), spacing: 14), count: 3)
-        }
-    }
-}
+// MARK: - View
 
-struct GameCard: Identifiable, Equatable {
-    let id: Int
-    var isLit: Bool = false
-}
-
-struct LightItUpState {
-    var score: Int = 0
-    var totalTimeElapsed: Double = 0.0
-    var roundLength: Double = 60.0
-    var isPlaying: Bool = false
-    var isGameOver: Bool = false
-    var lives: Int = 3
-    var currentLevel: GameLevel = .L1
-    
-    var cards: [GameCard] = [
-        GameCard(id: 0, isLit: false),
-        GameCard(id: 1, isLit: true),
-        GameCard(id: 2, isLit: false)
-    ]
-    
-    var windowTimeTracker: Double = 0.0
-    var showLevelUpOverlay: Bool = false
-    var levelUpOverlayTracker: Double = 0.0
-}
-
-enum LightItUpAction {
-    case startGame
-    case cardTapped(id: Int)
-    case timerTicked(timeStep: Double)
-    case changeRoundLength(Double)
-}
-
-struct LightItUpReducer {
-    static func reduce(currentState: LightItUpState, action: LightItUpAction) -> LightItUpState {
-        var newState = currentState
-        
-        switch action {
-        case .changeRoundLength(let length):
-            newState.roundLength = length
-            
-        case .startGame:
-            newState.score = 0
-            newState.totalTimeElapsed = 0.0
-            newState.lives = 3
-            newState.currentLevel = .L1
-            newState.isPlaying = true
-            newState.isGameOver = false
-            newState.windowTimeTracker = 0.0
-            newState.showLevelUpOverlay = false
-            
-            newState.cards = (0..<GameLevel.L1.totalCards).map { GameCard(id: $0, isLit: false) }
-            if let randomIdx = newState.cards.indices.randomElement() {
-                newState.cards[randomIdx].isLit = true
-            }
-            
-        case .cardTapped(let clickedId):
-            guard newState.isPlaying && !newState.isGameOver else { return newState }
-            
-            if let index = newState.cards.firstIndex(where: { $0.id == clickedId }) {
-                if newState.cards[index].isLit {
-                    newState.score += 1
-                    newState.windowTimeTracker = 0.0
-                    newState = shuffleLitCards(state: newState)
-                } else {
-                    newState.lives = max(0, newState.lives - 1)
-                    if newState.lives <= 0 {
-                        newState.isPlaying = false
-                        newState.isGameOver = true
-                    }
-                }
-            }
-            
-        case .timerTicked(let timeStep):
-            guard newState.isPlaying && !newState.isGameOver else { return newState }
-            
-            newState.totalTimeElapsed += timeStep
-            newState.windowTimeTracker += timeStep
-            
-            if newState.showLevelUpOverlay {
-                newState.levelUpOverlayTracker += timeStep
-                if newState.levelUpOverlayTracker >= 1.0 {
-                    newState.showLevelUpOverlay = false
-                }
-            }
-            
-            if newState.totalTimeElapsed >= newState.roundLength {
-                newState.isPlaying = false
-                newState.isGameOver = true
-                return newState
-            }
-            
-            let targetLevel: GameLevel
-            if newState.totalTimeElapsed < 15.0 { targetLevel = .L1 }
-            else if newState.totalTimeElapsed < 30.0 { targetLevel = .L2 }
-            else if newState.totalTimeElapsed < 45.0 { targetLevel = .L3 }
-            else { targetLevel = .L4 }
-            
-            if targetLevel != newState.currentLevel {
-                newState.currentLevel = targetLevel
-                newState.showLevelUpOverlay = true
-                newState.levelUpOverlayTracker = 0.0
-                
-                newState.cards = (0..<targetLevel.totalCards).map { GameCard(id: $0, isLit: false) }
-                newState.windowTimeTracker = 0.0
-                newState = shuffleLitCards(state: newState)
-                return newState
-            }
-            
-            if newState.windowTimeTracker >= newState.currentLevel.litDuration {
-                newState.windowTimeTracker = 0.0
-                newState.lives = max(0, newState.lives - 1)
-                
-                if newState.lives <= 0 {
-                    newState.isPlaying = false
-                    newState.isGameOver = true
-                } else {
-                    newState = shuffleLitCards(state: newState)
-                }
-            }
-        }
-        return newState
-    }
-    
-    private static func shuffleLitCards(state: LightItUpState) -> LightItUpState {
-        var stateCopy = state
-        for i in 0..<stateCopy.cards.count { stateCopy.cards[i].isLit = false }
-        
-        let countToLight = stateCopy.currentLevel == .L4 ? 2 : 1
-        let shuffledIndices = stateCopy.cards.indices.shuffled()
-        
-        for index in 0..<min(countToLight, shuffledIndices.count) {
-            stateCopy.cards[shuffledIndices[index]].isLit = true
-        }
-        return stateCopy
-    }
-}
-
-// MARK: - View Component
 struct LightItUpView: View {
     @Binding var currentRoute: GameRoute
     @State private var state = LightItUpState()
@@ -320,7 +143,7 @@ struct LightItUpView: View {
             
             // Initial Welcome Portal Layout
             if !state.isPlaying && !state.isGameOver {
-                GameOverlayCard {
+                OverlayCard(style: .glassmorphic) {
                     VStack(spacing: 24) {
                         Image(systemName: "lightbulb.fill")
                             .font(.system(size: 50))
@@ -354,7 +177,7 @@ struct LightItUpView: View {
             
             // Game Over Score Card Dialog
             if state.isGameOver {
-                GameOverlayCard {
+                OverlayCard(style: .glassmorphic) {
                     VStack(spacing: 24) {
                         Text("ROUND OVER")
                             .font(.system(size: 28, weight: .black, design: .rounded))
@@ -435,31 +258,6 @@ struct LightItUpView: View {
             .presentationDetents([.fraction(0.28)])
             .padding(.all, 24)
         }
-    }
-}
-
-// MARK: - STRUCT SUBVIEW: GameOverlayCard
-struct GameOverlayCard<Content: View>: View {
-    let content: Content
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
-    var body: some View {
-        VStack {
-            content
-        }
-        .padding(.all, 28)
-        .background(.ultraThinMaterial)
-        .environment(\.colorScheme, .dark)
-        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .stroke(.white.opacity(0.08), lineWidth: 1)
-        )
-        .padding(.horizontal, 36)
-        .transition(.opacity.combined(with: .scale(scale: 0.92)))
     }
 }
 

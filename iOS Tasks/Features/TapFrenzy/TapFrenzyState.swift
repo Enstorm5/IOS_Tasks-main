@@ -1,44 +1,9 @@
 import Foundation
 import SwiftUI
 
-enum GameRoute {
-    case mainMenu
-    case tapFrenzy
-    case lightItUp
-}
+// MARK: - State
 
-struct CardContainer<Content: View>: View {
-    let content: Content
-    init(@ViewBuilder content: () -> Content) { self.content = content() }
-    
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.4).ignoresSafeArea()
-            content
-                .padding(30)
-                .background(Color(UIColor.systemBackground))
-                .cornerRadius(24)
-                .shadow(radius: 20)
-                .padding(.horizontal, 40)
-        }
-    }
-}
-
-enum ButtonColor: CaseIterable {
-    case green
-    case grey
-    case normal
-    
-    var displayColor: Color {
-        switch self {
-        case .green: return .green
-        case .grey: return .gray
-        case .normal: return .red
-        }
-    }
-}
-
-struct TimerState {
+struct TapFrenzyState {
     var score: Int = 0
     var timeRemaining: Double = 10.0
     var isPlaying: Bool = false
@@ -53,15 +18,19 @@ struct TimerState {
     var colorChangeTicks: Int = 0
 }
 
-//Actions
-enum TimerAction {
+// MARK: - Actions
+
+enum TapFrenzyAction {
     case bigButtonTapped
     case startOrRestartGame
     case timerTicked(timeStep: Double)
 }
-struct TimerReducer {
+
+// MARK: - Reducer
+
+struct TapFrenzyReducer {
     
-    static func reduce(currentState: TimerState, action: TimerAction) -> TimerState {
+    static func reduce(currentState: TapFrenzyState, action: TapFrenzyAction) -> TapFrenzyState {
         var newState = currentState
         
         switch action {
@@ -80,7 +49,6 @@ struct TimerReducer {
             
             let now = Date()
             
-           
             if let lastTap = newState.lastTapTime {
                 let timeSinceLastTap = now.timeIntervalSince(lastTap)
                 if timeSinceLastTap <= 0.5 {
@@ -93,23 +61,18 @@ struct TimerReducer {
             }
             newState.lastTapTime = now
             
-            
             switch newState.currentButtonColor {
             case .green:
-            
                 newState.score += (1 * newState.comboMultiplier) * 2
             case .grey:
-                
                 newState.score = max(0, newState.score - 2)
                 newState.comboMultiplier = 1
             case .normal:
-                
                 newState.score += (1 * newState.comboMultiplier)
             }
             
         case .timerTicked(let timeStep):
             guard newState.isPlaying && !newState.isGameOver else { return newState }
-            
             
             newState.timeRemaining = max(0, newState.timeRemaining - timeStep)
             
@@ -119,11 +82,9 @@ struct TimerReducer {
                 return newState
             }
             
-            
             if let lastTap = newState.lastTapTime, Date().timeIntervalSince(lastTap) > 0.5 {
                 newState.comboMultiplier = 1
             }
-            
             
             newState.colorChangeTicks += 1
             if newState.colorChangeTicks >= 20 {

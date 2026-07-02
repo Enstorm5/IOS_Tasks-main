@@ -2,9 +2,9 @@ import SwiftUI
 
 struct TapFrenzyView: View {
     @Binding var currentRoute: GameRoute
-    @Binding var state: TimerState
+    @Binding var state: TapFrenzyState
     let onButtonTap: () -> Void
-    let onGameAction: (TimerAction) -> Void
+    let onGameAction: (TapFrenzyAction) -> Void
     
     var body: some View {
         ZStack {
@@ -60,7 +60,7 @@ struct TapFrenzyView: View {
             
             
             if !state.isPlaying && !state.isGameOver {
-                CardContainer {
+                OverlayCard(style: .standard) {
                     VStack(spacing: 20) {
                         Text("TAP FRENZY")
                             .font(.largeTitle)
@@ -84,7 +84,7 @@ struct TapFrenzyView: View {
             
             
             if state.isGameOver {
-                CardContainer {
+                OverlayCard(style: .standard) {
                     VStack(spacing: 20) {
                         Text("GAME OVER")
                             .font(.system(size: 32, weight: .black, design: .monospaced))
