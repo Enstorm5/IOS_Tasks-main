@@ -2,7 +2,9 @@ import SwiftUI
 
 struct MainMenuView: View {
     @Binding var currentRoute: GameRoute
-    @EnvironmentObject var scoreManager: ScoreManager
+    @Binding var bestTapFrenzy: Int
+    @Binding var bestLightItUp: Int
+    @Binding var bestQuizRush: Int
     let onTapFrenzySelected: () -> Void
     
     var body: some View {
@@ -39,7 +41,7 @@ struct MainMenuView: View {
             
             Spacer()
             
-            Text("\(scoreManager.totalBestScore) PTS")
+            Text("\(bestTapFrenzy + bestLightItUp + bestQuizRush) PTS")
                 .font(.system(size: 16, weight: .black))
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 16)
@@ -75,21 +77,21 @@ struct MainMenuView: View {
                 featuredCard(
                     title: "TAP FRENZY",
                     desc: "Tactical tapping challenge. Compete globally.",
-                    time: "REC: \(scoreManager.bestTapFrenzy)",
+                    time: "REC: \(bestTapFrenzy)",
                     action: { onTapFrenzySelected() }
                 )
                 
                 featuredCard(
                     title: "LIGHT IT UP",
                     desc: "High-speed reflex memory. Endless levels.",
-                    time: "REC: \(scoreManager.bestLightItUp)",
+                    time: "REC: \(bestLightItUp)",
                     action: { currentRoute = .lightItUp }
                 )
                 
                 featuredCard(
                     title: "QUIZ RUSH",
                     desc: "Live trivia,Answer from multiple choices.",
-                    time: "REC: \(scoreManager.bestQuizRush)",
+                    time: "REC: \(bestQuizRush)",
                     action: { currentRoute = .quizRush }
                 )
             }
