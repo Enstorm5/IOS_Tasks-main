@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 struct ScoreEntry: Codable, Identifiable, Equatable {
     var id = UUID()
