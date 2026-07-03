@@ -90,4 +90,19 @@ class ScoreManager: ObservableObject {
             quizRushScores = decoded
         }
     }
+    
+    func resetScores() {
+        tapFrenzyScores.removeAll()
+        lightItUpScores.removeAll()
+        quizRushScores.removeAll()
+        
+        userDefaults.removeObject(forKey: tapFrenzyKey)
+        userDefaults.removeObject(forKey: lightItUpKey)
+        userDefaults.removeObject(forKey: quizRushKey)
+        
+        // Also clear the AppStorage keys for the main menu REC stats
+        userDefaults.removeObject(forKey: "highScore_tapFrenzy")
+        userDefaults.removeObject(forKey: "highScore_lightItUp")
+        userDefaults.removeObject(forKey: "highScore_quizRush")
+    }
 }

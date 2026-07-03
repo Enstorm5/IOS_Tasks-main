@@ -39,9 +39,20 @@ struct ScoresView: View {
                                 }
                             }
                         }
+                        }
                         .padding(20)
-                        .padding(.bottom, 100)
                     }
+                    
+                    Button(action: {
+                        scoreManager.resetScores()
+                    }) {
+                        Text("RESET HISTORY")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(Color.gray)
+                            .underline()
+                    }
+                    .padding(.vertical, 16)
+                    .padding(.bottom, 16)
                 }
             }
         }

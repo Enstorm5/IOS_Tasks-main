@@ -201,7 +201,6 @@ struct QuizRushView: View {
             }
             
             Button(action: {
-                onGameFinish(viewModel.score)
                 currentRoute = .mainMenu
             }) {
                 Text("MAIN MENU")
