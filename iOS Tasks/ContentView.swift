@@ -68,8 +68,9 @@ struct ContentView: View {
         }
         .onReceive(timer) { _ in
             if currentRoute == .tapFrenzy {
+                let wasGameOver = tapFrenzyState.isGameOver
                 tapFrenzyState = TapFrenzyReducer.reduce(currentState: tapFrenzyState, action: .timerTicked(timeStep: 0.1))
-                if tapFrenzyState.isGameOver {
+                if !wasGameOver && tapFrenzyState.isGameOver {
                     if tapFrenzyState.score > bestTapFrenzy {
                         bestTapFrenzy = tapFrenzyState.score
                     }
