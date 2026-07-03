@@ -41,24 +41,16 @@ struct MainMenuView: View {
             
             Spacer()
             
-            HStack(spacing: 12) {
-                Text("2,450 PTS")
-                    .font(.system(size: 11, weight: .black))
-                    .foregroundColor(brutalistDark)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
-                    .background(
-                        cautionYellow
-                            .border(brutalistDark, width: 2)
-                            .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                    )
-                
-                Text("HELP")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(brutalistDark)
-                    .padding(.bottom, 2)
-                    .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
-            }
+            Text("2,450 PTS")
+                .font(.system(size: 11, weight: .black))
+                .foregroundColor(brutalistDark)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .background(
+                    cautionYellow
+                        .border(brutalistDark, width: 2)
+                        .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                )
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

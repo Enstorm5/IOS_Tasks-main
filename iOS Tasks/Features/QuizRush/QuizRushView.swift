@@ -42,10 +42,12 @@ struct QuizRushView: View {
                                 .foregroundColor(brutalistDark)
                                 .padding(.horizontal, 32)
                                 .padding(.vertical, 16)
-                                .background(cautionYellow)
+                        }
+                        .background(
+                            cautionYellow
                                 .border(brutalistDark, width: 2)
                                 .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                        }
+                        )
                         .buttonStyle(MenuButtonStyle())
                     }
                     
@@ -207,10 +209,12 @@ struct QuizRushView: View {
                     .foregroundColor(brutalistDark)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
-                    .background(cautionYellow)
+            }
+            .background(
+                cautionYellow
                     .border(brutalistDark, width: 2)
                     .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-            }
+            )
             .buttonStyle(MenuButtonStyle())
         }
         .onAppear {
