@@ -69,3 +69,62 @@ func tactileUIAccent(alignment: Alignment) -> some View {
         .stroke(brutalistDark, lineWidth: 1.5)
     }
 }
+
+// MARK: - Reusable Brutalist Views
+
+/// Standard Brutalist Card with heavy border, drop shadow, and corner accents
+struct TactileCard<Content: View>: View {
+    let content: Content
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .background(
+                brutalistBg
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
+            )
+            .overlay(tactileUIAccent(alignment: .topLeading))
+            .overlay(tactileUIAccent(alignment: .bottomTrailing))
+    }
+}
+
+/// A standard yellow thick line used for emphasizing titles
+func tactileTitleAccent() -> some View {
+    Rectangle()
+        .fill(cautionYellow)
+        .frame(width: 8, height: 24)
+        .border(brutalistDark, width: 1)
+}
+
+// MARK: - Button Styles
+
+/// Primary Action Button (Yellow background, thick border, drop shadow)
+struct TactileButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                cautionYellow
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: configuration.isPressed ? 0 : 3, y: configuration.isPressed ? 0 : 3)
+            )
+            .offset(x: configuration.isPressed ? 3 : 0, y: configuration.isPressed ? 3 : 0)
+    }
+}
+
+/// Secondary Action Button (White/Light background, thick border, drop shadow)
+struct TactileSecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                Color.white
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: configuration.isPressed ? 0 : 3, y: configuration.isPressed ? 0 : 3)
+            )
+            .offset(x: configuration.isPressed ? 3 : 0, y: configuration.isPressed ? 3 : 0)
+    }
+}
+

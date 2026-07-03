@@ -139,7 +139,6 @@ struct TapFrenzyView: View {
                 .frame(width: 320, height: 320)
             
             Button(action: onButtonTap) {
-                tactilePanel {
                     ZStack {
                         // Scanline effect
                         Rectangle()
@@ -168,7 +167,6 @@ struct TapFrenzyView: View {
                         }
                     }
                     .frame(width: 256, height: 256)
-                }
                 .background(
                     (state.currentButtonColor == .green ? Color.green.opacity(0.2) : panelBg)
                         .border(brutalistDark, width: 2)
@@ -188,7 +186,7 @@ struct TapFrenzyView: View {
             Color(red: 226/255, green: 232/255, blue: 240/255).opacity(0.6) // surface-dim
                 .ignoresSafeArea()
             
-            tactilePanel {
+            TactileCard {
                 VStack(spacing: 0) {
                     // Industrial Accent Bar
                     HStack(spacing: 4) {
@@ -203,7 +201,7 @@ struct TapFrenzyView: View {
                         // Title
                         VStack(spacing: 8) {
                             HStack(spacing: 8) {
-                                Rectangle().fill(cautionYellow).frame(width: 8, height: 24).border(brutalistDark, width: 1)
+                                tactileTitleAccent()
                                 
                                 if state.isGameOver {
                                     Text("GAME ")
@@ -260,21 +258,8 @@ struct TapFrenzyView: View {
                                 .foregroundColor(brutalistDark)
                                 .padding(.vertical, 20)
                                 .frame(maxWidth: .infinity)
-                                .background(
-                                    cautionYellow
-                                        .border(brutalistDark, width: 2)
-                                        .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                                )
-                                .overlay(
-                                    Path { path in
-                                        path.move(to: CGPoint(x: 4, y: 0))
-                                        path.addLine(to: CGPoint(x: 0, y: 0))
-                                        path.addLine(to: CGPoint(x: 0, y: 4))
-                                    }
-                                    .stroke(brutalistDark, lineWidth: 1)
-                                    .padding(4), alignment: .topLeading
-                                )
                             }
+                            .buttonStyle(TactileButtonStyle())
                             
                             if state.isGameOver {
                                 Button(action: { currentRoute = .mainMenu }) {
@@ -285,12 +270,8 @@ struct TapFrenzyView: View {
                                         .foregroundColor(brutalistDark)
                                         .padding(.vertical, 16)
                                         .frame(maxWidth: .infinity)
-                                        .background(
-                                            Color(red: 226/255, green: 232/255, blue: 240/255)
-                                                .border(brutalistDark, width: 2)
-                                                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                                        )
                                 }
+                                .buttonStyle(TactileSecondaryButtonStyle())
                             }
                         }
                     }
@@ -298,26 +279,9 @@ struct TapFrenzyView: View {
                     .padding(.bottom, 32)
                 }
             }
-            .background(
-                panelBg
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-            )
-            .overlay(
-                Path { path in
-                    path.move(to: CGPoint(x: -4, y: 0))
-                    path.addLine(to: CGPoint(x: 0, y: 0))
-                    path.addLine(to: CGPoint(x: 0, y: -4))
-                }
-                .stroke(brutalistDark, lineWidth: 3)
-                .padding(4), alignment: .bottomTrailing
-            )
             .padding(24)
         }
     }
     
-    // Tactile Panel Modifier
-    func tactilePanel<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-    }
+    // Tactile Panel Modifier removed and integrated to TactileUI.swift
 }

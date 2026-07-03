@@ -144,7 +144,7 @@ struct QuizRushView: View {
                 }
                 
                 // Question Text
-                tactileCard {
+                TactileCard {
                     Text(question.decodedQuestion)
                         .font(.system(size: 22, weight: .bold))
                         .foregroundColor(brutalistDark)
@@ -182,7 +182,7 @@ struct QuizRushView: View {
     
     private func resultsView() -> some View {
         VStack(spacing: 32) {
-            tactileCard {
+            TactileCard {
                 VStack(spacing: 16) {
                     Text("QUIZ COMPLETE")
                         .font(.system(size: 28, weight: .black))
@@ -278,15 +278,5 @@ struct QuizRushView: View {
         return .white
     }
     
-    // Tactile Card Modifier wrapper for this view
-    private func tactileCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .background(
-                brutalistBg
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-            )
-            .overlay(tactileUIAccent(alignment: .topLeading))
-            .overlay(tactileUIAccent(alignment: .bottomTrailing))
-    }
+    // Tactile components moved to TactileUI.swift
 }

@@ -62,10 +62,7 @@ struct MainMenuView: View {
     func heroSection() -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 8) {
-                Rectangle()
-                    .fill(cautionYellow)
-                    .frame(width: 8, height: 24)
-                    .border(brutalistDark, width: 1)
+                tactileTitleAccent()
                 
                 Text("FEATURED")
                     .font(.system(size: 26, weight: .heavy))
@@ -101,7 +98,7 @@ struct MainMenuView: View {
     // Featured Card
     func featuredCard(title: String, desc: String, time: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            tactileCard {
+            TactileCard {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .top) {
                         Text(title)
@@ -136,17 +133,7 @@ struct MainMenuView: View {
         .buttonStyle(PlainButtonStyle())
     }
     
-    // Tactile Card Modifier
-    func tactileCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .background(
-                brutalistBg
-                    .border(brutalistDark, width: 1.5)
-                    .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-            )
-            .overlay(tactileUIAccent(alignment: .topLeading))
-            .overlay(tactileUIAccent(alignment: .bottomTrailing))
-    }
+    // Tactile components moved to TactileUI.swift
     
     // Bottom Nav
     func bottomNavBar() -> some View {
