@@ -7,6 +7,7 @@ struct ContentView: View {
 
     @AppStorage("highScore_tapFrenzy") private var bestTapFrenzy: Int = 0
     @AppStorage("highScore_lightItUp") private var bestLightItUp: Int = 0
+    @AppStorage("highScore_quizRush") private var bestQuizRush: Int = 0
     
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 
@@ -18,6 +19,7 @@ struct ContentView: View {
                     currentRoute: $currentRoute,
                     bestTapFrenzy: $bestTapFrenzy,
                     bestLightItUp: $bestLightItUp,
+                    bestQuizRush: $bestQuizRush,
                     onTapFrenzySelected: {
                         tapFrenzyState = TapFrenzyState()
                         currentRoute = .tapFrenzy
@@ -40,6 +42,16 @@ struct ContentView: View {
                 LightItUpView(
                     currentRoute: $currentRoute,
                     highscoreTracker: $bestLightItUp
+                )
+                
+            case .quizRush:
+                QuizRushView(
+                    currentRoute: $currentRoute,
+                    onGameFinish: { score in
+                        if score > bestQuizRush {
+                            bestQuizRush = score
+                        }
+                    }
                 )
             }
         }

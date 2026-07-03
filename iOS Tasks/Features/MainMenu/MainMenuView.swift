@@ -4,6 +4,7 @@ struct MainMenuView: View {
     @Binding var currentRoute: GameRoute
     @Binding var bestTapFrenzy: Int
     @Binding var bestLightItUp: Int
+    @Binding var bestQuizRush: Int
     let onTapFrenzySelected: () -> Void
     
     var body: some View {
@@ -93,6 +94,13 @@ struct MainMenuView: View {
                     desc: "High-speed reflex memory. Endless levels.",
                     time: "REC: \(bestLightItUp)",
                     action: { currentRoute = .lightItUp }
+                )
+                
+                featuredCard(
+                    title: "QUIZ RUSH",
+                    desc: "Live trivia powered by OpenTDB.",
+                    time: "REC: \(bestQuizRush)",
+                    action: { currentRoute = .quizRush }
                 )
             }
         }
