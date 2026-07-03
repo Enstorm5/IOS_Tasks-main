@@ -1,8 +1,9 @@
 import Foundation
 
-enum GameRoute {
+enum GameRoute: String {
     case mainMenu
     case tapFrenzy
     case lightItUp
     case quizRush
+    case scores
 }

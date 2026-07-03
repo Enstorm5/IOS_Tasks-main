@@ -6,7 +6,7 @@ import Combine
 struct LightItUpView: View {
     @Binding var currentRoute: GameRoute
     @State private var state = LightItUpState()
-    @Binding var highscoreTracker: Int
+    var onGameFinish: (Int) -> Void
     
     @State private var showSettings: Bool = false
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
@@ -223,8 +223,8 @@ struct LightItUpView: View {
         .onReceive(timer) { _ in
             if state.isPlaying {
                 state = LightItUpReducer.reduce(currentState: state, action: .timerTicked(timeStep: 0.1))
-                if state.isGameOver && state.score > highscoreTracker {
-                    highscoreTracker = state.score
+                if state.isGameOver {
+                    onGameFinish(state.score)
                 }
             }
         }
@@ -263,5 +263,5 @@ struct LightItUpView: View {
 
 // MARK: - Preview Engine
 #Preview {
-    LightItUpView(currentRoute: .constant(.lightItUp), highscoreTracker: .constant(10))
+    LightItUpView(currentRoute: .constant(.lightItUp), onGameFinish: { _ in })
 }

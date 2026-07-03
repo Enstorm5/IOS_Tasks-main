@@ -2,9 +2,7 @@ import SwiftUI
 
 struct MainMenuView: View {
     @Binding var currentRoute: GameRoute
-    @Binding var bestTapFrenzy: Int
-    @Binding var bestLightItUp: Int
-    @Binding var bestQuizRush: Int
+    @EnvironmentObject var scoreManager: ScoreManager
     let onTapFrenzySelected: () -> Void
     
     var body: some View {
@@ -41,7 +39,7 @@ struct MainMenuView: View {
             
             Spacer()
             
-            Text("\(bestTapFrenzy + bestLightItUp + bestQuizRush) PTS")
+            Text("\(scoreManager.totalBestScore) PTS")
                 .font(.system(size: 16, weight: .black))
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 16)
@@ -77,21 +75,21 @@ struct MainMenuView: View {
                 featuredCard(
                     title: "TAP FRENZY",
                     desc: "Tactical tapping challenge. Compete globally.",
-                    time: "REC: \(bestTapFrenzy)",
+                    time: "REC: \(scoreManager.bestTapFrenzy)",
                     action: { onTapFrenzySelected() }
                 )
                 
                 featuredCard(
                     title: "LIGHT IT UP",
                     desc: "High-speed reflex memory. Endless levels.",
-                    time: "REC: \(bestLightItUp)",
+                    time: "REC: \(scoreManager.bestLightItUp)",
                     action: { currentRoute = .lightItUp }
                 )
                 
                 featuredCard(
                     title: "QUIZ RUSH",
                     desc: "Live trivia,Answer from multiple choices.",
-                    time: "REC: \(bestQuizRush)",
+                    time: "REC: \(scoreManager.bestQuizRush)",
                     action: { currentRoute = .quizRush }
                 )
             }
@@ -151,8 +149,8 @@ struct MainMenuView: View {
     // Bottom Nav
     func bottomNavBar() -> some View {
         HStack(spacing: 0) {
-            navItem(label: "Home", iconName: "home_icon", isSelected: true)
-            navItem(label: "Scores", iconName: "scores_icon", isSelected: false)
+            navItem(label: "Home", iconName: "home_icon", isSelected: true, action: {})
+            navItem(label: "Scores", iconName: "scores_icon", isSelected: false, action: { currentRoute = .scores })
         }
         .frame(height: 80)
         .padding(.horizontal, 24)
@@ -161,8 +159,8 @@ struct MainMenuView: View {
         .overlay(Rectangle().frame(height: 4).foregroundColor(brutalistDark), alignment: .top)
     }
     
-    func navItem(label: String, iconName: String, isSelected: Bool) -> some View {
-        Button(action: {}) {
+    func navItem(label: String, iconName: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             VStack(spacing: 4) {
                 Image(iconName)
                     .resizable()
