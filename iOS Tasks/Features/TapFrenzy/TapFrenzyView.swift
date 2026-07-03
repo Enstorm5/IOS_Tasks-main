@@ -65,14 +65,14 @@ struct TapFrenzyView: View {
             Spacer()
             
             Text("\(state.score) PTS")
-                .font(.system(size: 11, weight: .black))
+                .font(.system(size: 16, weight: .black))
                 .foregroundColor(brutalistDark)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 4)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
                 .background(
                     cautionYellow
                         .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
                 )
         }
         .padding(.horizontal, 20)

@@ -9,6 +9,7 @@ struct QuizRushView: View {
     @State private var flashColor: Color = .clear
     @State private var shakeOffset: CGFloat = 0
     @State private var isAnswering = false
+    @State private var selectedAnswer: String? = nil
     
     // Callback for high score update
     var onGameFinish: (Int) -> Void
@@ -103,14 +104,14 @@ struct QuizRushView: View {
                 }
                 
                 Text("\(viewModel.score) PTS")
-                    .font(.system(size: 11, weight: .black))
+                    .font(.system(size: 16, weight: .black))
                     .foregroundColor(brutalistDark)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
                     .background(
                         cautionYellow
                             .border(brutalistDark, width: 2)
-                            .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                            .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
                     )
             }
         }
@@ -163,10 +164,12 @@ struct QuizRushView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 20)
                                 .padding(.horizontal, 16)
-                                .background(Color.white)
+                        }
+                        .background(
+                            answerBackgroundColor(for: answer)
                                 .border(brutalistDark, width: 2)
                                 .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                        }
+                        )
                         .buttonStyle(MenuButtonStyle())
                         .disabled(isAnswering)
                     }
@@ -218,6 +221,7 @@ struct QuizRushView: View {
     private func handleAnswer(_ answer: String) {
         guard !isAnswering else { return }
         isAnswering = true
+        selectedAnswer = answer
         
         let isCorrect = viewModel.submitAnswer(answer)
         
@@ -244,15 +248,31 @@ struct QuizRushView: View {
                 shakeOffset = 10
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 shakeOffset = 0
                 withAnimation(.easeInOut(duration: 0.15)) {
                     flashColor = .clear
                 }
                 viewModel.advanceToNextQuestion()
                 isAnswering = false
+                selectedAnswer = nil
             }
         }
+    }
+    
+    private func answerBackgroundColor(for answer: String) -> Color {
+        guard isAnswering else { return .white }
+        
+        let isCorrectAnswer = answer == viewModel.currentQuestion?.decodedCorrectAnswer
+        if isCorrectAnswer {
+            return Color.green.opacity(0.8)
+        }
+        
+        if answer == selectedAnswer {
+            return Color.red.opacity(0.8)
+        }
+        
+        return .white
     }
     
     // Tactile Card Modifier wrapper for this view
