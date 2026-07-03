@@ -90,7 +90,7 @@ struct MainMenuView: View {
                 
                 featuredCard(
                     title: "QUIZ RUSH",
-                    desc: "Live trivia powered by OpenTDB.",
+                    desc: "Live trivia,Answer from multiple choices.",
                     time: "REC: \(bestQuizRush)",
                     action: { currentRoute = .quizRush }
                 )
@@ -151,27 +151,37 @@ struct MainMenuView: View {
     // Bottom Nav
     func bottomNavBar() -> some View {
         HStack(spacing: 0) {
-            navItem(label: "Home", isSelected: true)
-            navItem(label: "Library", isSelected: false)
-            navItem(label: "Scores", isSelected: false)
+            navItem(label: "Home", iconName: "home_icon", isSelected: true)
+            navItem(label: "Scores", iconName: "scores_icon", isSelected: false)
         }
-        .frame(height: 64)
+        .frame(height: 80)
         .padding(.horizontal, 24)
         .padding(.bottom, 20) // Home indicator
         .background(Color.white)
         .overlay(Rectangle().frame(height: 4).foregroundColor(brutalistDark), alignment: .top)
     }
     
-    func navItem(label: String, isSelected: Bool) -> some View {
+    func navItem(label: String, iconName: String, isSelected: Bool) -> some View {
         Button(action: {}) {
-            Text(label.uppercased())
-                .font(.system(size: 11, weight: .black))
-                .foregroundColor(isSelected ? brutalistDark : Color(red: 71/255, green: 85/255, blue: 105/255))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(isSelected ? cautionYellow : Color.clear)
-                .border(isSelected ? brutalistDark : Color.clear, width: 1)
+            VStack(spacing: 4) {
+                Image(iconName)
+                    .resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                
+                Text(label.uppercased())
+                    .font(.system(size: 14, weight: .black))
+            }
+            .foregroundColor(isSelected ? brutalistDark : Color(red: 71/255, green: 85/255, blue: 105/255))
+            .padding(.horizontal, 24)
+            .padding(.vertical, 8)
         }
+        .background(
+            (isSelected ? cautionYellow : Color.clear)
+                .border(isSelected ? brutalistDark : Color.clear, width: 2)
+                .shadow(color: isSelected ? brutalistDark : .clear, radius: 0, x: 3, y: 3)
+        )
         .frame(maxWidth: .infinity)
     }
 }
