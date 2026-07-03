@@ -39,7 +39,6 @@ struct ScoresView: View {
                                 }
                             }
                         }
-                        }
                         .padding(20)
                     }
                     
