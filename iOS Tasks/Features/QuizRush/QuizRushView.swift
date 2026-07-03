@@ -75,33 +75,49 @@ struct QuizRushView: View {
     
     private func topBar() -> some View {
         HStack {
-            Button(action: {
-                currentRoute = .mainMenu
-            }) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 20, weight: .black))
-                    .foregroundColor(brutalistDark)
-                    .padding(12)
-                    .background(Color.white)
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+            Button(action: { currentRoute = .mainMenu }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .black))
+                    Text("ARCADE")
+                        .font(.system(size: 20, weight: .black, design: .default))
+                        .italic()
+                }
+                .foregroundColor(brutalistDark)
             }
-            .buttonStyle(MenuButtonStyle())
             
             Spacer()
             
-            VStack(alignment: .trailing) {
-                Text("SCORE: \(viewModel.score)")
-                    .font(.system(size: 20, weight: .black))
-                    .foregroundColor(brutalistDark)
-                
+            HStack(spacing: 12) {
                 if viewModel.streak > 1 {
-                    Text("STREAK: \(viewModel.streak) 🔥")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.red)
+                    Text("\(viewModel.streak) STREAK 🔥")
+                        .font(.system(size: 11, weight: .black))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(
+                            Color.red
+                                .border(brutalistDark, width: 2)
+                                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                        )
                 }
+                
+                Text("\(viewModel.score) PTS")
+                    .font(.system(size: 11, weight: .black))
+                    .foregroundColor(brutalistDark)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(
+                        cautionYellow
+                            .border(brutalistDark, width: 2)
+                            .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                    )
             }
         }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.white)
+        .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
     }
     
     private func loadedView() -> some View {
