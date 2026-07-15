@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import MapKit
 
 enum AppTab: Int {
     case home
@@ -23,6 +24,7 @@ struct ContentView: View {
     @AppStorage("highScore_quizRush") private var bestQuizRush: Int = 0
     
     @StateObject private var scoreManager = ScoreManager()
+    @StateObject private var locationManager = LocationManager()
     
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 
@@ -84,6 +86,10 @@ struct ContentView: View {
             customTabBar()
         }
         .ignoresSafeArea(.all, edges: .bottom)
+        .onAppear {
+            locationManager.requestPermission()
+            locationManager.startUpdating()
+        }
         .onReceive(timer) { _ in
             let wasGameOver = tapFrenzyState.isGameOver
             tapFrenzyState = TapFrenzyReducer.reduce(currentState: tapFrenzyState, action: .timerTicked(timeStep: 0.1))
@@ -91,7 +97,7 @@ struct ContentView: View {
                 if tapFrenzyState.score > bestTapFrenzy {
                     bestTapFrenzy = tapFrenzyState.score
                 }
-                scoreManager.addScore(tapFrenzyState.score, for: .tapFrenzy)
+                scoreManager.addScore(tapFrenzyState.score, for: .tapFrenzy, location: locationManager.lastLocation)
             }
         }
         .environmentObject(scoreManager)
@@ -156,7 +162,7 @@ struct ContentView: View {
                     if score > bestLightItUp {
                         bestLightItUp = score
                     }
-                    scoreManager.addScore(score, for: .lightItUp)
+                    scoreManager.addScore(score, for: .lightItUp, location: locationManager.lastLocation)
                 }
             )
             .navigationBarHidden(true)
@@ -167,7 +173,7 @@ struct ContentView: View {
                     if score > bestQuizRush {
                         bestQuizRush = score
                     }
-                    scoreManager.addScore(score, for: .quizRush)
+                    scoreManager.addScore(score, for: .quizRush, location: locationManager.lastLocation)
                 }
             )
             .navigationBarHidden(true)
@@ -181,30 +187,125 @@ struct ContentView: View {
     ContentView()
 }
 
-// MARK: - MapView (appended to avoid Xcode project linking issue)
+// MARK: - MapView
 struct MapView: View {
+    @EnvironmentObject var scoreManager: ScoreManager
+    @State private var selectedEntry: ScoreEntry?
+    @State private var cameraPosition: MapCameraPosition = .automatic
+    
+    private let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .short
+        f.timeStyle = .short
+        return f
+    }()
+    
     var body: some View {
-        ZStack {
-            tactilePixelBackground()
-            VStack {
-                HStack {
-                    Text("MAP")
-                        .font(.system(size: 24, weight: .black, design: .default))
-                        .italic()
-                        .foregroundColor(brutalistDark)
-                    Spacer()
+        VStack(spacing: 0) {
+            mapTopBar()
+            
+            ZStack(alignment: .bottom) {
+                Map(position: $cameraPosition) {
+                    ForEach(scoreManager.scoredLocations) { entry in
+                        Annotation("", coordinate: CLLocationCoordinate2D(
+                            latitude: entry.latitude ?? 0,
+                            longitude: entry.longitude ?? 0
+                        )) {
+                            Button(action: { selectedEntry = entry }) {
+                                Image(systemName: "trophy.fill")
+                                    .font(.system(size: 28))
+                                    .foregroundColor(cautionYellow)
+                                    .background(
+                                        Circle()
+                                            .fill(brutalistDark)
+                                            .frame(width: 20, height: 20)
+                                    )
+                            }
+                        }
+                    }
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(Color.white)
-                .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
+                .mapStyle(.standard)
+                
+                if let entry = selectedEntry {
+                    pinDetail(entry: entry)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+        }
+    }
+    
+    private func mapTopBar() -> some View {
+        HStack {
+            Text("MAP")
+                .font(.system(size: 24, weight: .black, design: .default))
+                .italic()
+                .foregroundColor(brutalistDark)
+            
+            Spacer()
+            
+            Text("\(scoreManager.scoredLocations.count) PINS")
+                .font(.system(size: 14, weight: .black))
+                .foregroundColor(brutalistDark)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    cautionYellow
+                        .border(brutalistDark, width: 2)
+                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+                )
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.white)
+        .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
+    }
+    
+    private func pinDetail(entry: ScoreEntry) -> some View {
+        TactileCard {
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(gameModeLabel(entry.game))
+                        .font(.system(size: 10, weight: .black))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(brutalistDark)
+                    
+                    Text("\(entry.score) PTS")
+                        .font(.system(size: 28, weight: .black, design: .monospaced))
+                        .foregroundColor(brutalistDark)
+                    
+                    Text(dateFormatter.string(from: entry.date))
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(Color.gray)
+                }
                 
                 Spacer()
-                Text("MAP COMING SOON")
-                    .font(.system(size: 20, weight: .heavy))
-                    .foregroundColor(Color(red: 148/255, green: 163/255, blue: 184/255))
-                Spacer()
+                
+                Button(action: { selectedEntry = nil }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .black))
+                        .foregroundColor(brutalistDark)
+                        .frame(width: 32, height: 32)
+                }
+                .background(
+                    Color.white
+                        .border(brutalistDark, width: 2)
+                        .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+                )
             }
+            .padding(16)
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 12)
+    }
+    
+    private func gameModeLabel(_ game: String) -> String {
+        switch game {
+        case "tapFrenzy": return "TAP FRENZY"
+        case "lightItUp": return "LIGHT IT UP"
+        case "quizRush": return "QUIZ RUSH"
+        default: return game.uppercased()
         }
     }
 }

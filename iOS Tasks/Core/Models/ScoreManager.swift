@@ -1,12 +1,50 @@
 import Foundation
 import Combine
+import CoreLocation
 
 struct ScoreEntry: Codable, Identifiable, Equatable {
     var id = UUID()
     let score: Int
     let date: Date
     let game: String
+    let latitude: Double?
+    let longitude: Double?
 }
+
+// MARK: - Location Manager
+
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+    @Published var lastLocation: CLLocation?
+    
+    override init() {
+        super.init()
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    func requestPermission() {
+        manager.requestWhenInUseAuthorization()
+    }
+    
+    func startUpdating() {
+        manager.startUpdatingLocation()
+    }
+    
+    func stopUpdating() {
+        manager.stopUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        lastLocation = locations.last
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        // Location failed — pins just won't have coordinates
+    }
+}
+
+// MARK: - Score Manager
 
 class ScoreManager: ObservableObject {
     @Published var tapFrenzyScores: [ScoreEntry] = []
@@ -22,10 +60,16 @@ class ScoreManager: ObservableObject {
         loadScores()
     }
     
-    func addScore(_ score: Int, for route: GameRoute) {
-        guard score > 0 else { return } // Don't save 0 score
+    func addScore(_ score: Int, for route: GameRoute, location: CLLocation? = nil) {
+        guard score > 0 else { return }
         
-        let entry = ScoreEntry(score: score, date: Date(), game: route.rawValue)
+        let entry = ScoreEntry(
+            score: score,
+            date: Date(),
+            game: route.rawValue,
+            latitude: location?.coordinate.latitude,
+            longitude: location?.coordinate.longitude
+        )
         
         switch route {
         case .tapFrenzy:
@@ -99,6 +143,12 @@ class ScoreManager: ObservableObject {
         return all.sorted { $0.date > $1.date }
     }
     
+    /// All scores that have valid coordinates
+    var scoredLocations: [ScoreEntry] {
+        let all = tapFrenzyScores + lightItUpScores + quizRushScores
+        return all.filter { $0.latitude != nil && $0.longitude != nil }
+    }
+    
     // MARK: - Persistence
     
     private func saveScores() {
@@ -128,20 +178,5 @@ class ScoreManager: ObservableObject {
            let decoded = try? JSONDecoder().decode([ScoreEntry].self, from: data) {
             quizRushScores = decoded
         }
-    }
-    
-    func resetScores() {
-        tapFrenzyScores.removeAll()
-        lightItUpScores.removeAll()
-        quizRushScores.removeAll()
-        
-        userDefaults.removeObject(forKey: tapFrenzyKey)
-        userDefaults.removeObject(forKey: lightItUpKey)
-        userDefaults.removeObject(forKey: quizRushKey)
-        
-        // Also clear the AppStorage keys for the main menu REC stats
-        userDefaults.removeObject(forKey: "highScore_tapFrenzy")
-        userDefaults.removeObject(forKey: "highScore_lightItUp")
-        userDefaults.removeObject(forKey: "highScore_quizRush")
     }
 }

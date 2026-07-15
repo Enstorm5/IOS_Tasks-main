@@ -29,7 +29,7 @@ struct ScoresView: View {
                             barChartSection()
                             recentGamesSection()
                             leaderboardSection()
-                            resetButton()
+
                         }
                         .padding(20)
                     }
@@ -354,19 +354,7 @@ struct ScoresView: View {
         )
     }
     
-    // MARK: - Reset
-    
-    private func resetButton() -> some View {
-        Button(action: {
-            scoreManager.resetScores()
-        }) {
-            Text("RESET HISTORY")
-                .font(.system(size: 11, weight: .bold))
-                .foregroundColor(Color.gray)
-                .underline()
-        }
-        .padding(.vertical, 16)
-    }
+
     
     // MARK: - Helpers
     
