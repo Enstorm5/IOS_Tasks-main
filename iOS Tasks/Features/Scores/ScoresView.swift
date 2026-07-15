@@ -62,25 +62,11 @@ struct ScoresView: View {
     
     private func topBar() -> some View {
         HStack {
-            Button(action: {
-                currentRoute = .mainMenu
-            }) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .black))
-                    .foregroundColor(brutalistDark)
-                    .frame(width: 44, height: 44)
-            }
-            .background(
-                Color.white
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-            )
-            
             Text("SCORES")
                 .font(.system(size: 24, weight: .black, design: .default))
                 .italic()
                 .foregroundColor(brutalistDark)
-                .padding(.leading, 12)
+
             
             Spacer()
             

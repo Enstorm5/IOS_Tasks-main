@@ -1,6 +1,6 @@
 import Foundation
 
-enum GameRoute: String {
+enum GameRoute: String, Hashable {
     case mainMenu
     case tapFrenzy
     case lightItUp
