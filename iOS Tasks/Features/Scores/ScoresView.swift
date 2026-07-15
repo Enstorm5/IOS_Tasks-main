@@ -119,28 +119,25 @@ struct ScoresView: View {
     }
     
     private func bestRow(mode: String, score: Int, avg: Int) -> some View {
-        HStack {
-            Text(mode)
-                .font(.system(size: 13, weight: .bold))
-                .foregroundColor(brutalistDark)
-            
-            Spacer()
-            
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("\(score) PTS")
-                    .font(.system(size: 16, weight: .black, design: .monospaced))
+        TactileCard {
+            HStack {
+                Text(mode)
+                    .font(.system(size: 13, weight: .bold))
                     .foregroundColor(brutalistDark)
-                Text("AVG \(avg)")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(Color.gray)
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(score) PTS")
+                        .font(.system(size: 16, weight: .black, design: .monospaced))
+                        .foregroundColor(brutalistDark)
+                    Text("AVG \(avg)")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color.gray)
+                }
             }
+            .padding(12)
         }
-        .padding(12)
-        .background(
-            Color.white
-                .border(brutalistDark, width: 2)
-                .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-        )
     }
     
     // MARK: - Bar Chart
@@ -154,63 +151,60 @@ struct ScoresView: View {
                     .foregroundColor(brutalistDark)
             }
             
-            Chart {
-                BarMark(
-                    x: .value("Game", "TAP"),
-                    y: .value("Score", scoreManager.bestTapFrenzy)
-                )
-                .foregroundStyle(cautionYellow)
-                .annotation(position: .top) {
-                    Text("\(scoreManager.bestTapFrenzy)")
-                        .font(.system(size: 11, weight: .black, design: .monospaced))
-                        .foregroundColor(brutalistDark)
+            TactileCard {
+                Chart {
+                    BarMark(
+                        x: .value("Game", "TAP"),
+                        y: .value("Score", scoreManager.bestTapFrenzy)
+                    )
+                    .foregroundStyle(cautionYellow)
+                    .annotation(position: .top) {
+                        Text("\(scoreManager.bestTapFrenzy)")
+                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .foregroundColor(brutalistDark)
+                    }
+                    
+                    BarMark(
+                        x: .value("Game", "LIGHT"),
+                        y: .value("Score", scoreManager.bestLightItUp)
+                    )
+                    .foregroundStyle(cautionYellow)
+                    .annotation(position: .top) {
+                        Text("\(scoreManager.bestLightItUp)")
+                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .foregroundColor(brutalistDark)
+                    }
+                    
+                    BarMark(
+                        x: .value("Game", "QUIZ"),
+                        y: .value("Score", scoreManager.bestQuizRush)
+                    )
+                    .foregroundStyle(cautionYellow)
+                    .annotation(position: .top) {
+                        Text("\(scoreManager.bestQuizRush)")
+                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .foregroundColor(brutalistDark)
+                    }
                 }
-                
-                BarMark(
-                    x: .value("Game", "LIGHT"),
-                    y: .value("Score", scoreManager.bestLightItUp)
-                )
-                .foregroundStyle(cautionYellow)
-                .annotation(position: .top) {
-                    Text("\(scoreManager.bestLightItUp)")
-                        .font(.system(size: 11, weight: .black, design: .monospaced))
-                        .foregroundColor(brutalistDark)
+                .chartXAxis {
+                    AxisMarks { _ in
+                        AxisValueLabel()
+                            .font(.system(size: 12, weight: .black))
+                            .foregroundStyle(brutalistDark)
+                    }
                 }
-                
-                BarMark(
-                    x: .value("Game", "QUIZ"),
-                    y: .value("Score", scoreManager.bestQuizRush)
-                )
-                .foregroundStyle(cautionYellow)
-                .annotation(position: .top) {
-                    Text("\(scoreManager.bestQuizRush)")
-                        .font(.system(size: 11, weight: .black, design: .monospaced))
-                        .foregroundColor(brutalistDark)
+                .chartYAxis {
+                    AxisMarks { _ in
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [4]))
+                            .foregroundStyle(Color.gray.opacity(0.3))
+                        AxisValueLabel()
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(Color.gray)
+                    }
                 }
+                .frame(height: 200)
+                .padding(16)
             }
-            .chartXAxis {
-                AxisMarks { _ in
-                    AxisValueLabel()
-                        .font(.system(size: 12, weight: .black))
-                        .foregroundStyle(brutalistDark)
-                }
-            }
-            .chartYAxis {
-                AxisMarks { _ in
-                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [4]))
-                        .foregroundStyle(Color.gray.opacity(0.3))
-                    AxisValueLabel()
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .foregroundStyle(Color.gray)
-                }
-            }
-            .frame(height: 200)
-            .padding(16)
-            .background(
-                Color.white
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-            )
         }
     }
     
@@ -328,30 +322,27 @@ struct ScoresView: View {
     }
     
     private func scoreCard(entry: ScoreEntry, rank: Int) -> some View {
-        HStack {
-            Text("#\(rank)")
-                .font(.system(size: 20, weight: .heavy))
-                .foregroundColor(rank == 1 ? cautionYellow : brutalistDark)
-                .frame(width: 40, alignment: .leading)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("\(entry.score) PTS")
-                    .font(.system(size: 22, weight: .black))
-                    .foregroundColor(brutalistDark)
+        TactileCard {
+            HStack {
+                Text("#\(rank)")
+                    .font(.system(size: 20, weight: .heavy))
+                    .foregroundColor(rank == 1 ? cautionYellow : brutalistDark)
+                    .frame(width: 40, alignment: .leading)
                 
-                Text(dateFormatter.string(from: entry.date))
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(Color(red: 100/255, green: 116/255, blue: 139/255))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(entry.score) PTS")
+                        .font(.system(size: 22, weight: .black))
+                        .foregroundColor(brutalistDark)
+                    
+                    Text(dateFormatter.string(from: entry.date))
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(Color(red: 100/255, green: 116/255, blue: 139/255))
+                }
+                
+                Spacer()
             }
-            
-            Spacer()
+            .padding(16)
         }
-        .padding(16)
-        .background(
-            Color.white
-                .border(brutalistDark, width: 2)
-                .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-        )
     }
     
 
