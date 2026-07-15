@@ -31,20 +31,22 @@ class ScoreManager: ObservableObject {
         case .tapFrenzy:
             tapFrenzyScores.append(entry)
             tapFrenzyScores.sort { $0.score > $1.score }
-            if tapFrenzyScores.count > 10 { tapFrenzyScores.removeLast() }
+            if tapFrenzyScores.count > 50 { tapFrenzyScores.removeLast() }
         case .lightItUp:
             lightItUpScores.append(entry)
             lightItUpScores.sort { $0.score > $1.score }
-            if lightItUpScores.count > 10 { lightItUpScores.removeLast() }
+            if lightItUpScores.count > 50 { lightItUpScores.removeLast() }
         case .quizRush:
             quizRushScores.append(entry)
             quizRushScores.sort { $0.score > $1.score }
-            if quizRushScores.count > 10 { quizRushScores.removeLast() }
+            if quizRushScores.count > 50 { quizRushScores.removeLast() }
         default: break
         }
         
         saveScores()
     }
+    
+    // MARK: - Personal Bests
     
     var bestTapFrenzy: Int {
         tapFrenzyScores.first?.score ?? 0
@@ -61,6 +63,43 @@ class ScoreManager: ObservableObject {
     var totalBestScore: Int {
         bestTapFrenzy + bestLightItUp + bestQuizRush
     }
+    
+    // MARK: - Stats Helpers
+    
+    var totalGamesPlayed: Int {
+        tapFrenzyScores.count + lightItUpScores.count + quizRushScores.count
+    }
+    
+    var totalScoreAllGames: Int {
+        let tapTotal = tapFrenzyScores.reduce(0) { $0 + $1.score }
+        let lightTotal = lightItUpScores.reduce(0) { $0 + $1.score }
+        let quizTotal = quizRushScores.reduce(0) { $0 + $1.score }
+        return tapTotal + lightTotal + quizTotal
+    }
+    
+    func averageScore(for route: GameRoute) -> Int {
+        let scores = scoresFor(route)
+        guard !scores.isEmpty else { return 0 }
+        let total = scores.reduce(0) { $0 + $1.score }
+        return total / scores.count
+    }
+    
+    func scoresFor(_ route: GameRoute) -> [ScoreEntry] {
+        switch route {
+        case .tapFrenzy: return tapFrenzyScores
+        case .lightItUp: return lightItUpScores
+        case .quizRush: return quizRushScores
+        default: return []
+        }
+    }
+    
+    /// All scores combined, sorted by date (newest first)
+    var recentGames: [ScoreEntry] {
+        let all = tapFrenzyScores + lightItUpScores + quizRushScores
+        return all.sorted { $0.date > $1.date }
+    }
+    
+    // MARK: - Persistence
     
     private func saveScores() {
         if let encoded = try? JSONEncoder().encode(tapFrenzyScores) {
