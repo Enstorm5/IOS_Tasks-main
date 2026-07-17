@@ -58,16 +58,22 @@ struct MapView: View {
             
             Spacer()
             
-            Text("\(scoreManager.scoredLocations.count) PINS")
-                .font(.system(size: 14, weight: .black))
-                .foregroundColor(brutalistDark)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    cautionYellow
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                )
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .automatic
+                }
+            }) {
+                Text("\(scoreManager.scoredLocations.count) PINS")
+                    .font(.system(size: 14, weight: .black))
+                    .foregroundColor(brutalistDark)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(
+                        cautionYellow
+                            .border(brutalistDark, width: 2)
+                            .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+                    )
+            }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

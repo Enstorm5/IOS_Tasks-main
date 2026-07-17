@@ -122,8 +122,8 @@ struct QuizRushView: View {
             Button(action: {
                 state = QuizRushReducer.reduce(currentState: state, action: .randomizeSetup)
             }) {
-                Text("RANDOMIZE 🎲")
-                    .font(.system(size: 16, weight: .bold))
+                Text("RANDOMIZE")
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(brutalistDark)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
