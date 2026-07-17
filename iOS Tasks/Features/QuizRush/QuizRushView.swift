@@ -3,7 +3,8 @@ import Combine
 
 struct QuizRushView: View {
     @Binding var currentRoute: GameRoute
-    @StateObject private var viewModel = QuizRushViewModel()
+    @State private var state = QuizRushState()
+    private let quizService = QuizService()
     
     // Animation states
     @State private var flashColor: Color = .clear
@@ -22,7 +23,10 @@ struct QuizRushView: View {
                 topBar()
                 Spacer()
                 
-                switch viewModel.state {
+                switch state.viewState {
+                case .setup:
+                    setupView()
+                    
                 case .loading:
                     ProgressView("Fetching Trivia...")
                         .font(.system(size: 16, weight: .bold))
@@ -35,7 +39,8 @@ struct QuizRushView: View {
                             .foregroundColor(.red)
                         
                         Button(action: {
-                            viewModel.retry()
+                            state = QuizRushReducer.reduce(currentState: state, action: .retry)
+                            loadData()
                         }) {
                             Text("RETRY")
                                 .font(.system(size: 18, weight: .bold))
@@ -43,12 +48,7 @@ struct QuizRushView: View {
                                 .padding(.horizontal, 32)
                                 .padding(.vertical, 16)
                         }
-                        .background(
-                            cautionYellow
-                                .border(brutalistDark, width: 2)
-                                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-                        )
-                        .buttonStyle(MenuButtonStyle())
+                        .buttonStyle(TactileButtonStyle())
                     }
                     
                 case .loaded:
@@ -69,11 +69,113 @@ struct QuizRushView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
         }
-        .task {
-            if viewModel.state == .loading && viewModel.questions.isEmpty {
-                viewModel.loadData()
+    }
+    
+    private func loadData() {
+        Task {
+            do {
+                let fetchedQuestions = try await quizService.fetchQuestions(category: state.selectedCategory, difficulty: state.selectedDifficulty)
+                state = QuizRushReducer.reduce(currentState: state, action: .dataLoaded(fetchedQuestions))
+            } catch {
+                state = QuizRushReducer.reduce(currentState: state, action: .dataFailed)
             }
         }
+    }
+    
+    private func setupView() -> some View {
+        VStack(spacing: 24) {
+            TactileCard {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("GENRE")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color.gray)
+                    
+                    HStack {
+                        genreButton(id: 11, label: "FILM")
+                        genreButton(id: 12, label: "MUSIC")
+                    }
+                    HStack {
+                        genreButton(id: 14, label: "TV")
+                        genreButton(id: 15, label: "GAMES")
+                    }
+                }
+                .padding(20)
+                .frame(maxWidth: .infinity)
+            }
+            
+            TactileCard {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("DIFFICULTY")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color.gray)
+                    
+                    HStack {
+                        difficultyButton(id: "easy", label: "EASY")
+                        difficultyButton(id: "medium", label: "MEDIUM")
+                        difficultyButton(id: "hard", label: "HARD")
+                    }
+                }
+                .padding(20)
+                .frame(maxWidth: .infinity)
+            }
+            
+            Button(action: {
+                state = QuizRushReducer.reduce(currentState: state, action: .randomizeSetup)
+            }) {
+                Text("RANDOMIZE 🎲")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(brutalistDark)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+            }
+            .buttonStyle(TactileSecondaryButtonStyle())
+            
+            Button(action: {
+                state = QuizRushReducer.reduce(currentState: state, action: .startQuiz)
+                loadData()
+            }) {
+                Text("START RUSH")
+                    .font(.system(size: 20, weight: .black))
+                    .foregroundColor(brutalistDark)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+            }
+            .buttonStyle(TactileButtonStyle())
+        }
+    }
+    
+    private func genreButton(id: Int, label: String) -> some View {
+        Button(action: {
+            state = QuizRushReducer.reduce(currentState: state, action: .setCategory(id))
+        }) {
+            Text(label)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(brutalistDark)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+        }
+        .background(
+            (state.selectedCategory == id ? cautionYellow : Color.white)
+                .border(brutalistDark, width: 2)
+                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+        )
+    }
+    
+    private func difficultyButton(id: String, label: String) -> some View {
+        Button(action: {
+            state = QuizRushReducer.reduce(currentState: state, action: .setDifficulty(id))
+        }) {
+            Text(label)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(brutalistDark)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+        }
+        .background(
+            (state.selectedDifficulty == id ? cautionYellow : Color.white)
+                .border(brutalistDark, width: 2)
+                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
+        )
     }
     
     private func topBar() -> some View {
@@ -92,8 +194,8 @@ struct QuizRushView: View {
             Spacer()
             
             HStack(spacing: 12) {
-                if viewModel.streak > 1 {
-                    Text("\(viewModel.streak) STREAK 🔥")
+                if state.streak > 1 {
+                    Text("\(state.streak) STREAK 🔥")
                         .font(.system(size: 11, weight: .black))
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
@@ -105,7 +207,7 @@ struct QuizRushView: View {
                         )
                 }
                 
-                Text("\(viewModel.score) PTS")
+                Text("\(state.score) PTS")
                     .font(.system(size: 16, weight: .black))
                     .foregroundColor(brutalistDark)
                     .padding(.horizontal, 16)
@@ -125,10 +227,10 @@ struct QuizRushView: View {
     
     private func loadedView() -> some View {
         VStack(spacing: 32) {
-            if let question = viewModel.currentQuestion {
+            if let question = state.currentQuestion {
                 // Question Header
                 HStack {
-                    Text("Q\(viewModel.currentIndex + 1) of \(viewModel.questions.count)")
+                    Text("Q\(state.currentIndex + 1) of \(state.questions.count)")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(brutalistDark)
                         .padding(.horizontal, 12)
@@ -156,7 +258,7 @@ struct QuizRushView: View {
                 
                 // Answers
                 VStack(spacing: 16) {
-                    ForEach(viewModel.currentAnswers, id: \.self) { answer in
+                    ForEach(state.currentAnswers, id: \.self) { answer in
                         Button(action: {
                             handleAnswer(answer)
                         }) {
@@ -166,13 +268,13 @@ struct QuizRushView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 20)
                                 .padding(.horizontal, 16)
+                                .background(
+                                    answerBackgroundColor(for: answer)
+                                        .border(brutalistDark, width: 2)
+                                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+                                )
                         }
-                        .background(
-                            answerBackgroundColor(for: answer)
-                                .border(brutalistDark, width: 2)
-                                .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                        )
-                        .buttonStyle(MenuButtonStyle())
+                        .buttonStyle(TactileSecondaryButtonStyle())
                         .disabled(isAnswering)
                     }
                 }
@@ -192,7 +294,7 @@ struct QuizRushView: View {
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(Color.gray)
                     
-                    Text("\(viewModel.score)")
+                    Text("\(state.score)")
                         .font(.system(size: 64, weight: .black))
                         .foregroundColor(brutalistDark)
                 }
@@ -209,15 +311,10 @@ struct QuizRushView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
             }
-            .background(
-                cautionYellow
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-            )
-            .buttonStyle(MenuButtonStyle())
+            .buttonStyle(TactileButtonStyle())
         }
         .onAppear {
-            onGameFinish(viewModel.score)
+            onGameFinish(state.score)
         }
     }
     
@@ -226,7 +323,8 @@ struct QuizRushView: View {
         isAnswering = true
         selectedAnswer = answer
         
-        let isCorrect = viewModel.submitAnswer(answer)
+        let isCorrect = answer == state.currentQuestion?.decodedCorrectAnswer
+        state = QuizRushReducer.reduce(currentState: state, action: .submitAnswer(answer: answer, isCorrect: isCorrect))
         
         if isCorrect {
             // Green flash
@@ -237,7 +335,7 @@ struct QuizRushView: View {
                 withAnimation(.easeInOut(duration: 0.15)) {
                     flashColor = .clear
                 }
-                viewModel.advanceToNextQuestion()
+                state = QuizRushReducer.reduce(currentState: state, action: .advanceToNextQuestion)
                 isAnswering = false
             }
         } else {
@@ -256,7 +354,7 @@ struct QuizRushView: View {
                 withAnimation(.easeInOut(duration: 0.15)) {
                     flashColor = .clear
                 }
-                viewModel.advanceToNextQuestion()
+                state = QuizRushReducer.reduce(currentState: state, action: .advanceToNextQuestion)
                 isAnswering = false
                 selectedAnswer = nil
             }
@@ -266,7 +364,7 @@ struct QuizRushView: View {
     private func answerBackgroundColor(for answer: String) -> Color {
         guard isAnswering else { return .white }
         
-        let isCorrectAnswer = answer == viewModel.currentQuestion?.decodedCorrectAnswer
+        let isCorrectAnswer = answer == state.currentQuestion?.decodedCorrectAnswer
         if isCorrectAnswer {
             return Color.green.opacity(0.8)
         }

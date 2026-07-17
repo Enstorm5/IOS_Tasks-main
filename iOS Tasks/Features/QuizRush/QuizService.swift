@@ -6,12 +6,8 @@ struct QuizService {
         case invalidResponse
     }
     
-    func fetchQuestions() async throws -> [Question] {
-        // Categories: 11 = Film, 12 = Music, 14 = Television, 15 = Video Games
-        let allowedCategories = [11, 12, 14, 15]
-        let randomCategory = allowedCategories.randomElement()!
-        
-        guard let url = URL(string: "https://opentdb.com/api.php?amount=10&category=\(randomCategory)&type=multiple") else {
+    func fetchQuestions(category: Int, difficulty: String) async throws -> [Question] {
+        guard let url = URL(string: "https://opentdb.com/api.php?amount=10&category=\(category)&difficulty=\(difficulty)&type=multiple") else {
             throw NetworkError.badURL
         }
         
