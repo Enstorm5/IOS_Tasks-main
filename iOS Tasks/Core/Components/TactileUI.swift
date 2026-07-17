@@ -28,29 +28,29 @@ func tactilePixelBackground() -> some View {
 func tactileCornerBrackets(color: Color) -> some View {
     GeometryReader { geo in
         Path { path in
-            // TL
+    
             path.move(to: CGPoint(x: 6, y: 0))
             path.addLine(to: CGPoint(x: 0, y: 0))
             path.addLine(to: CGPoint(x: 0, y: 6))
             
-            // TR
+            
             path.move(to: CGPoint(x: geo.size.width - 6, y: 0))
             path.addLine(to: CGPoint(x: geo.size.width, y: 0))
             path.addLine(to: CGPoint(x: geo.size.width, y: 6))
             
-            // BL
+         
             path.move(to: CGPoint(x: 6, y: geo.size.height))
             path.addLine(to: CGPoint(x: 0, y: geo.size.height))
             path.addLine(to: CGPoint(x: 0, y: geo.size.height - 6))
             
-            // BR
+     
             path.move(to: CGPoint(x: geo.size.width - 6, y: geo.size.height))
             path.addLine(to: CGPoint(x: geo.size.width, y: geo.size.height))
             path.addLine(to: CGPoint(x: geo.size.width, y: geo.size.height - 6))
         }
         .stroke(color, lineWidth: 3)
     }
-    .padding(-4) // Offset outwards
+    .padding(-4) 
 }
 
 func tactileUIAccent(alignment: Alignment) -> some View {
@@ -72,7 +72,7 @@ func tactileUIAccent(alignment: Alignment) -> some View {
 
 
 
-/// Standard Brutalist Card with heavy border, drop shadow, and corner accents
+
 struct TactileCard<Content: View>: View {
     let content: Content
     
@@ -92,7 +92,6 @@ struct TactileCard<Content: View>: View {
     }
 }
 
-/// A standard yellow thick line used for emphasizing titles
 func tactileTitleAccent() -> some View {
     Rectangle()
         .fill(cautionYellow)
@@ -102,7 +101,6 @@ func tactileTitleAccent() -> some View {
 
 
 
-/// Primary Action Button (Yellow background, thick border, drop shadow)
 struct TactileButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -115,7 +113,6 @@ struct TactileButtonStyle: ButtonStyle {
     }
 }
 
-/// Secondary Action Button (White/Light background, thick border, drop shadow)
 struct TactileSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -128,7 +125,6 @@ struct TactileSecondaryButtonStyle: ButtonStyle {
     }
 }
 
-/// Success Action Button (Green background, thick border, drop shadow)
 struct TactileSuccessButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -141,7 +137,6 @@ struct TactileSuccessButtonStyle: ButtonStyle {
     }
 }
 
-/// Dynamic Color Action Button
 struct TactileDynamicButtonStyle: ButtonStyle {
     var color: Color
     func makeBody(configuration: Configuration) -> some View {
@@ -175,7 +170,6 @@ extension View {
     }
 }
 
-/// Icon Action Button (White/Light background, smaller shadow, used for top bar icons)
 struct TactileIconButtonStyle: ButtonStyle {
     var isSelected: Bool = false
     func makeBody(configuration: Configuration) -> some View {
@@ -189,7 +183,6 @@ struct TactileIconButtonStyle: ButtonStyle {
     }
 }
 
-/// Segment Toggle Button Style
 struct TactileSegmentButtonStyle: ButtonStyle {
     var isSelected: Bool
     func makeBody(configuration: Configuration) -> some View {
@@ -203,7 +196,6 @@ struct TactileSegmentButtonStyle: ButtonStyle {
     }
 }
 
-/// A unified game over modal to be used across all games
 struct TactileGameOverModal: View {
     let score: Int
     let gameName: String
@@ -266,7 +258,6 @@ struct TactileGameOverModal: View {
 
 
 
-/// A unified brutalist banner for alerts (Level Up, Success, Failed, etc)
 struct TactileBanner: View {
     let text: String
     var textColor: Color = .white

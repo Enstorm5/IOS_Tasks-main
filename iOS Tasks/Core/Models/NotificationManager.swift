@@ -27,11 +27,11 @@ class NotificationManager: ObservableObject {
     }
     
     func scheduleDailyReminder(hour: Int, minute: Int) {
-        cancelReminders() // Clear existing first
+        cancelReminders() 
         
         let content = UNMutableNotificationContent()
-        content.title = "Time to Play! 🏆"
-        content.body = "Come back and beat your high scores in iOS Tasks!"
+        content.title = "Let's Play"
+        content.body = "Beat your high scores"
         content.sound = .default
         
         var dateComponents = DateComponents()

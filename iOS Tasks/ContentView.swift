@@ -94,7 +94,7 @@ struct ContentView: View {
         }
         .frame(height: 70)
         .padding(.horizontal, 24)
-        .padding(.bottom, 20) // Home indicator padding
+        .padding(.bottom, 20) 
         .background(Color.white)
         .overlay(Rectangle().frame(height: 4).foregroundColor(brutalistDark), alignment: .top)
     }
@@ -103,7 +103,7 @@ struct ContentView: View {
         let isSelected = selectedTab == tab
         return Button(action: {
             if tab == .home {
-                homePath = NavigationPath() // Reset to root if in game
+                homePath = NavigationPath() // Reset to root 
             }
             selectedTab = tab
         }) {

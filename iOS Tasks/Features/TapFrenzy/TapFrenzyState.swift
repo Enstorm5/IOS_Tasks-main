@@ -13,20 +13,20 @@ struct TapFrenzyState {
     var isPlaying: Bool = false
     var isGameOver: Bool = false
     
-    // Combo System
+   
     var comboMultiplier: Int = 1
     var lastTapTime: Date? = nil
     
-    // Trap Color System
+   
     var currentButtonColor: ButtonColor = .normal
     var colorChangeTicks: Int = 0
     
-    // Split Mode System
+    
     var isSplitModeActive: Bool = false
     var correctSplitSide: TapSide = .center
     var splitModeTicksRemaining: Int = 0
     
-    // Golden Tile System
+   
     var isGoldenTileActive: Bool = false
     var goldenTileTicksRemaining: Int = 0
     var goldenTileOffset: CGSize = .zero
@@ -71,7 +71,7 @@ struct TapFrenzyReducer {
                 if side != newState.correctSplitSide {
                     isPenaltyHit = true
                 }
-                // Always end split mode after any tap
+              
                 newState.isSplitModeActive = false
                 newState.splitModeTicksRemaining = 0
             }
@@ -156,8 +156,7 @@ struct TapFrenzyReducer {
                 if !newState.isGoldenTileActive {
                     if Int.random(in: 1...100) <= 30 {
                         newState.isGoldenTileActive = true
-                        newState.goldenTileTicksRemaining = 15 // 1.5 seconds
-                        // Spawn safely above or below the 256x256 main square
+                        newState.goldenTileTicksRemaining = 15 
                         let randomX = CGFloat.random(in: -120...120)
                         let randomY = Bool.random() ? CGFloat.random(in: 180...220) : CGFloat.random(in: -220...(-180))
                         newState.goldenTileOffset = CGSize(width: randomX, height: randomY)

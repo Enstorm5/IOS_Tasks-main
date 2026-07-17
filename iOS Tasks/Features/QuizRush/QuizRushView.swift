@@ -219,7 +219,7 @@ struct QuizRushView: View {
     private func loadedView() -> some View {
         VStack(spacing: 32) {
             if let question = state.currentQuestion {
-                // Question Header
+                
                 HStack {
                     Text("Q\(state.currentIndex + 1) of \(state.questions.count)")
                         .font(.system(size: 14, weight: .bold))
@@ -236,7 +236,7 @@ struct QuizRushView: View {
                         .foregroundColor(Color.gray)
                 }
                 
-                // Question Text
+                
                 TactileCard {
                     Text(question.decodedQuestion)
                         .font(.system(size: 22, weight: .bold))

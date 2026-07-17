@@ -19,7 +19,7 @@ struct LightItUpState {
     var showLevelUpOverlay: Bool = false
     var levelUpOverlayTracker: Double = 0.0
     
-    // Pattern Memory Mode
+    // Pattern Mode
     var hasPatternModeTriggered: Bool = false
     var isPatternModeActive: Bool = false
     var prePatternCards: [GameCard] = []
@@ -82,8 +82,7 @@ struct LightItUpReducer {
                     newState.windowTimeTracker = 0.0
                     newState = shuffleLitCards(state: newState)
                 } else {
-                    // Penalty for wrong tap: optionally subtract score?
-                    // For now, just ignore or subtract 1 if > 0
+
                     newState.score = max(0, newState.score - 1)
                 }
             }
@@ -96,7 +95,7 @@ struct LightItUpReducer {
             let tapIndex = newState.userPatternTaps.count - 1
             
             if newState.patternSequence[tapIndex] == clickedId {
-                // Correct tap
+            
                 if let idx = newState.cards.firstIndex(where: { $0.id == clickedId }) {
                     newState.cards[idx].isSuccess = true
                 }
@@ -108,7 +107,7 @@ struct LightItUpReducer {
                     newState.patternDisplayTimer = 0.0
                 }
             } else {
-                // Wrong tap
+                
                 if let idx = newState.cards.firstIndex(where: { $0.id == clickedId }) {
                     newState.cards[idx].isFailure = true
                 }
@@ -136,14 +135,14 @@ struct LightItUpReducer {
             if newState.isShowingPatternSequence {
                 newState.patternDisplayTimer += timeStep
                 
-                // Turn off the card halfway through the interval to create a clear visual gap
+                // Turn off the card halfway t
                 if newState.patternDisplayTimer >= 0.4 && newState.patternDisplayTimer < 0.5 {
                     for i in 0..<newState.cards.count {
                         newState.cards[i].isLit = false
                     }
                 }
                 
-                // Move to next card every 0.8 seconds
+               
                 if newState.patternDisplayTimer >= 0.8 {
                     newState.patternDisplayTimer = 0.0
                     
@@ -166,9 +165,9 @@ struct LightItUpReducer {
             newState.windowTimeTracker += timeStep
             newState.patternModeCooldownTracker += timeStep
             
-            // Randomly trigger mid-game pattern mode once per game
+            // Randomly trigger mid-game 
             if !newState.hasPatternModeTriggered && !newState.isPatternModeActive && !newState.isShowingPatternSequence && newState.patternModeCooldownTracker > 10.0 {
-                if Double.random(in: 0...1) < 0.05 { // ~50% chance per second
+                if Double.random(in: 0...1) < 0.05 { 
                     newState.hasPatternModeTriggered = true
                     newState.prePatternCards = newState.cards
                     newState.prePatternLevel = newState.currentLevel

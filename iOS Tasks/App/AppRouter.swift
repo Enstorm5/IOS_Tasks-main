@@ -7,7 +7,6 @@ enum GameRoute: String, Hashable {
     case quizRush
     case scores
     
-    /// Full display name (e.g. "TAP FRENZY")
     var displayName: String {
         switch self {
         case .tapFrenzy: return "TAP FRENZY"
@@ -17,7 +16,6 @@ enum GameRoute: String, Hashable {
         }
     }
     
-    /// Short label (e.g. "TAP")
     var shortName: String {
         switch self {
         case .tapFrenzy: return "TAP"
@@ -27,13 +25,12 @@ enum GameRoute: String, Hashable {
         }
     }
     
-    /// Convert rawValue string back to a GameRoute for label lookups
     static func fromRawValue(_ raw: String) -> GameRoute? {
         GameRoute(rawValue: raw)
     }
 }
 
-/// Shared date formatter for score displays
+/// Shared date formatter 
 let sharedDateFormatter: DateFormatter = {
     let f = DateFormatter()
     f.dateStyle = .short

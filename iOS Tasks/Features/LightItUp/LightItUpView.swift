@@ -9,7 +9,7 @@ struct LightItUpView: View {
     @State private var showSettings: Bool = false
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
-    // Animation for lit tiles
+    
     @State private var pulseScale: CGFloat = 1.0
     
     var body: some View {
@@ -19,20 +19,19 @@ struct LightItUpView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 32) {
-                        // Technical HUD
+                    
                         hudView()
                         
-                        // Matrix Grid
                         gridView()
                         
                         Spacer(minLength: 40)
                     }
-                    .padding(.top, 100) // Push below the overlay topBar
+                    .padding(.top, 100) /
                 }
             }
             .blur(radius: (state.isGameOver || !state.isPlaying) ? 10 : 0)
             
-            // Level Up Text
+           
             if state.showLevelUpOverlay {
                 TactileBanner(
                     text: "LEVEL UP!",
@@ -46,13 +45,13 @@ struct LightItUpView: View {
                 )
             }
             
-            // Start / Welcome Dialog
+            // Start 
             if !state.isPlaying && !state.isGameOver && !state.isPatternModeActive {
-                Color.white.opacity(0.6).ignoresSafeArea() // dim background
+                Color.white.opacity(0.6).ignoresSafeArea() 
                 startDialog()
             }
             
-            // Pattern Mode Banner
+            
             if state.isPatternModeActive && state.isShowingPatternSequence && state.currentPatternDisplayIndex == 0 {
                 TactileBanner(
                     text: "PATTERN MODE!",
@@ -75,7 +74,7 @@ struct LightItUpView: View {
                 )
             }
             
-            // Game Over Dialog
+            
             if state.isGameOver {
                 Color.white.opacity(0.6).ignoresSafeArea() // dim background
                 gameOverDialog()
@@ -87,7 +86,7 @@ struct LightItUpView: View {
                 state = LightItUpReducer.reduce(currentState: state, action: .timerTicked(timeStep: 0.1))
             }
             
-            // Subtle pulse for active elements
+            
             withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
                 pulseScale = 1.05
             }
@@ -147,7 +146,6 @@ struct LightItUpView: View {
     private func hudView() -> some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                // Score
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CURRENT SCORE")
                         .font(.system(size: 10, weight: .bold))
@@ -168,7 +166,7 @@ struct LightItUpView: View {
                 
                 Spacer()
                 
-                // Title
+               
                 VStack(alignment: .center, spacing: 8) {
                     Text("LIGHT IT UP")
                         .font(.system(size: 16, weight: .black))
@@ -177,7 +175,7 @@ struct LightItUpView: View {
                 
                 Spacer()
                 
-                // Time
+                
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("TIME LEFT")
                         .font(.system(size: 10, weight: .bold))
@@ -222,7 +220,7 @@ struct LightItUpView: View {
         let cardHeight: CGFloat = state.isPatternModeActive ? 60 : 100
         
         return ZStack {
-            // Structural Accents (Corner brackets) for the grid container
+            
             tactileCornerBrackets(color: .blue)
             
             LazyVGrid(columns: gridColumns, spacing: state.isPatternModeActive ? 8 : 16) {

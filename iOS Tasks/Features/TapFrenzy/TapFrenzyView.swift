@@ -14,7 +14,6 @@ struct TapFrenzyView: View {
             tactilePixelBackground()
             
             VStack(spacing: 0) {
-                // We keep HUD in background when not playing, but slightly dimmed
                 gameHUD()
                     .opacity(state.isPlaying ? 1.0 : 0.4)
                     .blur(radius: state.isPlaying ? 0 : 2)
@@ -22,10 +21,10 @@ struct TapFrenzyView: View {
                 
                 Spacer()
                 
-                // Primary Target
+               
                 tapTarget()
                     .disabled(!state.isPlaying)
-                    .opacity(state.isPlaying ? 1.0 : 0.1) // Ghost element when not playing
+                    .opacity(state.isPlaying ? 1.0 : 0.1) 
                 
                 Spacer()
             }
@@ -48,7 +47,6 @@ struct TapFrenzyView: View {
         }
     }
     
-    // Top Bar (Acts as back navigation)
     func topBar() -> some View {
         HStack {
             Button(action: { currentRoute = .mainMenu }) {
@@ -80,14 +78,12 @@ struct TapFrenzyView: View {
         .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
     }
     
-    // Gameplay HUD
     func gameHUD() -> some View {
         VStack(spacing: 32) {
-            // Score
             VStack(spacing: 4) {
                 Text("System_Score")
                     .font(.system(size: 11, weight: .black, design: .monospaced))
-                    .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255)) // on-surface-variant
+                    .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255)) 
                     .tracking(2)
                 
                 Text("\(state.score)")
@@ -95,8 +91,7 @@ struct TapFrenzyView: View {
                     .foregroundColor(brutalistDark)
             }
             
-            // Progress Bar
-            VStack(spacing: 12) {
+           
                 HStack(alignment: .bottom) {
                     Text("TIMER_REMAINING")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
@@ -109,11 +104,11 @@ struct TapFrenzyView: View {
                         .foregroundColor(brutalistDark)
                 }
                 
-                // Brutalist Progress Bar
+               
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Rectangle()
-                            .fill(Color(red: 226/255, green: 232/255, blue: 240/255)) // surface-container-high
+                            .fill(Color(red: 226/255, green: 232/255, blue: 240/255)) 
                         
                         Rectangle()
                             .fill(cautionYellow)
@@ -129,10 +124,9 @@ struct TapFrenzyView: View {
         }
     }
     
-    // The Tap Target
     func tapTarget() -> some View {
         ZStack {
-            // Outer Decorative Marks
+    
             Circle()
                 .stroke(brutalistDark.opacity(0.05), lineWidth: 1)
                 .frame(width: 320, height: 320)
@@ -252,11 +246,10 @@ struct TapFrenzyView: View {
         .buttonStyle(PlainButtonStyle())
     }
     
-    // Start / Game Over Modal
+    // Start 
     func startGameOverModal() -> some View {
         ZStack {
-            Color(red: 226/255, green: 232/255, blue: 240/255).opacity(0.6) // surface-dim
-                .ignoresSafeArea()
+            Color(red: 226/255, green: 232/255, blue: 240/255).opacity(0.6) 
             
             if state.isGameOver {
                 TactileGameOverModal(
@@ -268,7 +261,7 @@ struct TapFrenzyView: View {
             } else {
                 TactileCard {
                     VStack(spacing: 0) {
-                        // Industrial Accent Bar
+                        
                         HStack(spacing: 4) {
                             Spacer()
                             Rectangle().fill(brutalistDark).frame(width: 6, height: 6)
@@ -291,19 +284,19 @@ struct TapFrenzyView: View {
                                         Text("FRENZY")
                                             .font(.system(size: 40, weight: .black))
                                             .italic()
-                                            .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255)) // tertiary #ca8a04
+                                            .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255)) /
                                     }
                                 }
                                 
                                 Rectangle().fill(brutalistDark).frame(width: 48, height: 3)
                             }
                             
-                            // Body
+                       
                             Text("Tap as fast as you can inside \(Text("10 seconds").font(.system(size: 17, weight: .black)).foregroundColor(brutalistDark)). Avoid penalty traps!")
                                 .font(.system(size: 17, weight: .semibold))
                                 .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
                             
-                            // Action Buttons
+                          
                             VStack(spacing: 16) {
                                 Button(action: { onGameAction(.startOrRestartGame) }) {
                                     HStack(spacing: 12) {

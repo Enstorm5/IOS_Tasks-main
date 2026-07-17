@@ -161,7 +161,7 @@ struct MapView: View {
                         }
                     }
                 }
-                .frame(maxHeight: 150) // Restrict height so it doesn't take over the screen
+                .frame(maxHeight: 150) 
             }
             .padding(16)
         }

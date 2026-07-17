@@ -104,13 +104,13 @@ class ScoreManager: ObservableObject {
         }
     }
     
-    /// All scores combined, sorted by date (newest first)
+
     var recentGames: [ScoreEntry] {
         let all = tapFrenzyScores + lightItUpScores + quizRushScores
         return all.sorted { $0.date > $1.date }
     }
     
-    /// All scores that have valid coordinates
+
     var scoredLocations: [ScoreEntry] {
         let all = tapFrenzyScores + lightItUpScores + quizRushScores
         return all.filter { $0.latitude != nil && $0.longitude != nil }

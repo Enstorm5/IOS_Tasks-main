@@ -24,7 +24,7 @@ struct SettingsView: View {
         }
         .onAppear {
             if reminderTimeInterval == 0 {
-                // Default to 8:00 PM
+               
                 var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
                 components.hour = 20
                 components.minute = 0

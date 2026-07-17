@@ -29,6 +29,5 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        // Location failed — pins just won't have coordinates
     }
 }

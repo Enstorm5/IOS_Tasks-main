@@ -13,7 +13,7 @@ struct MainMenuView: View {
                     VStack(spacing: 32) {
                         heroSection()
                     }
-                    .padding(.top, 80) // Space for top bar
+                    .padding(.top, 80) 
                     .padding(.bottom, 20)
                     .padding(.horizontal, 20)
                 }
@@ -94,7 +94,7 @@ struct MainMenuView: View {
         }
     }
     
-    // Featured Card Content
+    
     func featuredCardContent(title: String, desc: String, time: String) -> some View {
         TactileCard {
             VStack(alignment: .leading, spacing: 12) {
