@@ -43,7 +43,7 @@ struct ScoresView: View {
             
             Spacer()
             
-            Text("TOTAL: \(scoreManager.totalBestScore)")
+            Text("TOTAL: \(scoreManager.totalScoreAllGames)")
                 .font(.system(size: 14, weight: .black))
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 12)

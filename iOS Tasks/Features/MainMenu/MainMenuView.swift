@@ -38,7 +38,7 @@ struct MainMenuView: View {
             
             Spacer()
             
-            Text("\(scoreManager.totalBestScore) PTS")
+            Text("\(scoreManager.totalBestScore) REC TOTAL")
                 .font(.system(size: 16, weight: .black))
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 16)
