@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-// MARK: - State
+
 
 enum TapSide: Equatable {
     case center, left, right
@@ -32,7 +32,7 @@ struct TapFrenzyState {
     var goldenTileOffset: CGSize = .zero
 }
 
-// MARK: - Actions
+
 
 enum TapFrenzyAction {
     case targetTapped(side: TapSide)
@@ -41,7 +41,7 @@ enum TapFrenzyAction {
     case timerTicked(timeStep: Double)
 }
 
-// MARK: - Reducer
+
 
 struct TapFrenzyReducer {
     

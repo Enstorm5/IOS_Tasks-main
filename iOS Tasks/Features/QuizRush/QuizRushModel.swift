@@ -32,7 +32,7 @@ struct Question: Codable, Equatable {
 }
 
 extension String {
-    /// A lightweight HTML decoder for OpenTDB which avoids WebKit/Main Thread issues
+
     var htmlDecoded: String {
         return self
             .replacingOccurrences(of: "&quot;", with: "\"")

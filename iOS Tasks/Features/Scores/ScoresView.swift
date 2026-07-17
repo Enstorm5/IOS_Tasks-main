@@ -32,7 +32,7 @@ struct ScoresView: View {
         .background(Color.white)
     }
     
-    // MARK: - Top Bar
+
     
     private func topBar() -> some View {
         HStack {
@@ -56,7 +56,7 @@ struct ScoresView: View {
         .overlay(Rectangle().frame(height: 2).foregroundColor(brutalistDark), alignment: .bottom)
     }
     
-    // MARK: - Summary Cards
+
     
     private func summaryCards() -> some View {
         HStack(spacing: 12) {
@@ -88,7 +88,7 @@ struct ScoresView: View {
         }
     }
     
-    // MARK: - Personal Bests
+
     
     private func personalBests() -> some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -129,7 +129,7 @@ struct ScoresView: View {
         }
     }
     
-    // MARK: - Bar Chart
+
     
     private func barChartSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -197,7 +197,7 @@ struct ScoresView: View {
         }
     }
     
-    // MARK: - Recent Games
+
     
     private func recentGamesSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -251,7 +251,7 @@ struct ScoresView: View {
         }
     }
     
-    // MARK: - Leaderboard (Per-Game)
+
     
     private func leaderboardSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {

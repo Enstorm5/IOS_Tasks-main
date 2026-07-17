@@ -1,8 +1,6 @@
 import SwiftUI
 import Combine
 
-// MARK: - View
-
 struct LightItUpView: View {
     @Binding var currentRoute: GameRoute
     @State private var state = LightItUpState()
@@ -36,18 +34,16 @@ struct LightItUpView: View {
             
             // Level Up Text
             if state.showLevelUpOverlay {
-                Text("LEVEL UP!")
-                    .font(.system(size: 42, weight: .black, design: .default))
-                    .tracking(2)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(
-                        cautionYellow
-                            .border(brutalistDark, width: 4)
-                            .shadow(color: brutalistDark, radius: 0, x: 6, y: 6)
-                    )
-                    .transition(.scale.combined(with: .opacity))
+                TactileBanner(
+                    text: "LEVEL UP!",
+                    textColor: .white,
+                    backgroundColor: cautionYellow,
+                    angle: 0,
+                    fontSize: 42,
+                    tracking: 2,
+                    paddingH: 24,
+                    paddingV: 12
+                )
             }
             
             // Start / Welcome Dialog
@@ -58,16 +54,25 @@ struct LightItUpView: View {
             
             // Pattern Mode Banner
             if state.isPatternModeActive && state.isShowingPatternSequence && state.currentPatternDisplayIndex == 0 {
-                Text("PATTERN MODE!")
-                    .font(.system(size: 36, weight: .black))
-                    .foregroundColor(cautionYellow)
-                    .padding(20)
-                    .background(brutalistDark)
-                    .border(cautionYellow, width: 4)
-                    .rotationEffect(.degrees(-5))
-                    .shadow(color: .black, radius: 0, x: 6, y: 6)
-                    .transition(.scale.combined(with: .opacity))
-                    .zIndex(10)
+                TactileBanner(
+                    text: "PATTERN MODE!",
+                    textColor: cautionYellow,
+                    backgroundColor: brutalistDark,
+                    borderColor: cautionYellow,
+                    angle: -5,
+                    fontSize: 36
+                )
+            }
+            
+            // Pattern Result Banner
+            if state.isShowingPatternResult {
+                TactileBanner(
+                    text: state.patternResultSuccess ? "SUCCESS!" : "FAILED!",
+                    textColor: .white,
+                    backgroundColor: state.patternResultSuccess ? Color.green : Color.red,
+                    angle: state.patternResultSuccess ? 5 : -5,
+                    fontSize: 42
+                )
             }
             
             // Game Over Dialog
@@ -96,8 +101,6 @@ struct LightItUpView: View {
             }
         }
     }
-    
-    // MARK: - Subviews
     
     private func topBar() -> some View {
         HStack {
@@ -232,8 +235,22 @@ struct LightItUpView: View {
                         }
                     }) {
                         ZStack {
-                            if card.isLit {
-                                Color(red: 13/255, green: 211/255, blue: 225/255) // Cyan Accent
+                            if card.isSuccess {
+                                Color.green
+                                tactileCornerBrackets(color: .white)
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 32))
+                                    .foregroundColor(.white)
+                                    .scaleEffect(pulseScale)
+                            } else if card.isFailure {
+                                Color.red
+                                tactileCornerBrackets(color: .white)
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 32))
+                                    .foregroundColor(.white)
+                                    .scaleEffect(pulseScale)
+                            } else if card.isLit {
+                                Color(red: 13/255, green: 211/255, blue: 225/255)
                                 tactileCornerBrackets(color: .white)
                                 Image(systemName: "bolt.fill")
                                     .font(.system(size: 32))
@@ -248,10 +265,10 @@ struct LightItUpView: View {
                         }
                         .frame(height: cardHeight)
                         .border(brutalistDark, width: 2)
-                        .background(card.isLit ? Color(red: 13/255, green: 211/255, blue: 225/255) : .white)
-                        .shadow(color: card.isLit ? brutalistDark : .clear, radius: 0, x: card.isLit ? 6 : 0, y: card.isLit ? 6 : 0)
-                        .offset(x: card.isLit ? -3 : 0, y: card.isLit ? -3 : 0)
-                        .zIndex(card.isLit ? 1 : 0)
+                        .background(card.isSuccess ? Color.green : (card.isFailure ? Color.red : (card.isLit ? Color(red: 13/255, green: 211/255, blue: 225/255) : .white)))
+                        .shadow(color: card.isActive ? brutalistDark : .clear, radius: 0, x: card.isActive ? 6 : 0, y: card.isActive ? 6 : 0)
+                        .offset(x: card.isActive ? -3 : 0, y: card.isActive ? -3 : 0)
+                        .zIndex(card.isActive ? 1 : 0)
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
@@ -278,7 +295,7 @@ struct LightItUpView: View {
                     Text("LIGHT IT UP")
                         .font(.system(size: 28, weight: .black))
                         .foregroundColor(brutalistDark)
-                    Text("Tap the highlighted tiles before they dim. Focus and stay fast—you only have 3 lives!")
+                    Text("Tap the highlighted tiles before they dim. Focus and stay fast to score points!")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(Color.gray)
                         .multilineTextAlignment(.center)
@@ -340,7 +357,6 @@ struct LightItUpView: View {
     
 }
 
-// MARK: - Preview Engine
 #Preview {
     LightItUpView(currentRoute: .constant(.lightItUp), onGameFinish: { _ in })
 }

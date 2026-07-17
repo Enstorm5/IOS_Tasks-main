@@ -11,7 +11,7 @@ struct ScoreEntry: Codable, Identifiable, Equatable {
     let longitude: Double?
 }
 
-// MARK: - Score Manager
+
 
 class ScoreManager: ObservableObject {
     @Published var tapFrenzyScores: [ScoreEntry] = []
@@ -57,7 +57,7 @@ class ScoreManager: ObservableObject {
         saveScores()
     }
     
-    // MARK: - Personal Bests
+
     
     var bestTapFrenzy: Int {
         tapFrenzyScores.first?.score ?? 0
@@ -75,7 +75,7 @@ class ScoreManager: ObservableObject {
         bestTapFrenzy + bestLightItUp + bestQuizRush
     }
     
-    // MARK: - Stats Helpers
+
     
     var totalGamesPlayed: Int {
         tapFrenzyScores.count + lightItUpScores.count + quizRushScores.count
@@ -116,7 +116,7 @@ class ScoreManager: ObservableObject {
         return all.filter { $0.latitude != nil && $0.longitude != nil }
     }
     
-    // MARK: - Persistence
+
     
     private func saveScores() {
         if let encoded = try? JSONEncoder().encode(tapFrenzyScores) {

@@ -5,13 +5,13 @@ struct QuizRushView: View {
     @State private var state = QuizRushState()
     private let quizService = QuizService()
     
-    // Animation states
+  
     @State private var flashColor: Color = .clear
     @State private var shakeOffset: CGFloat = 0
     @State private var isAnswering = false
     @State private var selectedAnswer: String? = nil
     
-    // Callback for high score update
+  
     var onGameFinish: (Int) -> Void
     
     var body: some View {
@@ -63,7 +63,7 @@ struct QuizRushView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
             
-            // Screen flash overlay
+
             flashColor
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
@@ -276,7 +276,7 @@ struct QuizRushView: View {
                 onMenu: { currentRoute = .mainMenu },
                 onPlayAgain: {
                     state = QuizRushReducer.reduce(currentState: state, action: .randomizeSetup)
-                    state.viewState = .setup // Hard override to go back to setup UI properly
+                    state.viewState = .setup 
                 }
             )
         }
@@ -293,8 +293,7 @@ struct QuizRushView: View {
         let isCorrect = answer == state.currentQuestion?.decodedCorrectAnswer
         state = QuizRushReducer.reduce(currentState: state, action: .submitAnswer(answer: answer, isCorrect: isCorrect))
         
-        if isCorrect {
-            // Green flash
+        if isCorrect {     
             withAnimation(.easeInOut(duration: 0.15)) {
                 flashColor = Color.green.opacity(0.3)
             }
@@ -306,12 +305,11 @@ struct QuizRushView: View {
                 isAnswering = false
             }
         } else {
-            // Red flash and shake
             withAnimation(.easeInOut(duration: 0.15)) {
                 flashColor = Color.red.opacity(0.3)
             }
             
-            // Simple shake animation
+
             withAnimation(.linear(duration: 0.05).repeatCount(4, autoreverses: true)) {
                 shakeOffset = 10
             }

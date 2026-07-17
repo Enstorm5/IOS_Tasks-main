@@ -1,12 +1,12 @@
 import SwiftUI
 
-// MARK: - Global Colors
+
 let brutalistDark = Color(red: 15/255, green: 23/255, blue: 42/255) // #0F172A
 let brutalistBg = Color(red: 248/255, green: 250/255, blue: 252/255) // #F8FAFC
 let panelBg = Color(red: 241/255, green: 245/255, blue: 249/255) // #F1F5F9
 let cautionYellow = Color(red: 250/255, green: 204/255, blue: 21/255) // #FACC15
 
-// MARK: - Shared View Components
+
 
 func tactilePixelBackground() -> some View {
     Canvas { context, size in
@@ -70,7 +70,7 @@ func tactileUIAccent(alignment: Alignment) -> some View {
     }
 }
 
-// MARK: - Reusable Brutalist Views
+
 
 /// Standard Brutalist Card with heavy border, drop shadow, and corner accents
 struct TactileCard<Content: View>: View {
@@ -100,7 +100,7 @@ func tactileTitleAccent() -> some View {
         .border(brutalistDark, width: 1)
 }
 
-// MARK: - Button Styles
+
 
 /// Primary Action Button (Yellow background, thick border, drop shadow)
 struct TactileButtonStyle: ButtonStyle {
@@ -155,7 +155,7 @@ struct TactileDynamicButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Badges & Labels
+
 
 struct TactileBadgeModifier: ViewModifier {
     var color: Color
@@ -261,5 +261,37 @@ struct TactileGameOverModal: View {
             .padding(32)
         }
         .padding(.horizontal, 24)
+    }
+}
+
+
+
+/// A unified brutalist banner for alerts (Level Up, Success, Failed, etc)
+struct TactileBanner: View {
+    let text: String
+    var textColor: Color = .white
+    var backgroundColor: Color = cautionYellow
+    var borderColor: Color = brutalistDark
+    var angle: Double = 0
+    var fontSize: CGFloat = 36
+    var tracking: CGFloat = 0
+    var paddingH: CGFloat = 20
+    var paddingV: CGFloat = 20
+    
+    var body: some View {
+        Text(text)
+            .font(.system(size: fontSize, weight: .black))
+            .tracking(tracking)
+            .foregroundColor(textColor)
+            .padding(.horizontal, paddingH)
+            .padding(.vertical, paddingV)
+            .background(
+                backgroundColor
+                    .border(borderColor, width: 4)
+                    .shadow(color: brutalistDark, radius: 0, x: 6, y: 6)
+            )
+            .rotationEffect(.degrees(angle))
+            .transition(.scale.combined(with: .opacity))
+            .zIndex(10)
     }
 }

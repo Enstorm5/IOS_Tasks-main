@@ -1,8 +1,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - State
-
 struct LightItUpState {
     var score: Int = 0
     var totalTimeElapsed: Double = 0.0
@@ -22,6 +20,7 @@ struct LightItUpState {
     var levelUpOverlayTracker: Double = 0.0
     
     // Pattern Memory Mode
+    var hasPatternModeTriggered: Bool = false
     var isPatternModeActive: Bool = false
     var prePatternCards: [GameCard] = []
     var prePatternLevel: GameLevel = .L1
@@ -29,11 +28,11 @@ struct LightItUpState {
     var patternSequence: [Int] = []
     var userPatternTaps: [Int] = []
     var isShowingPatternSequence: Bool = false
+    var isShowingPatternResult: Bool = false
+    var patternResultSuccess: Bool = false
     var currentPatternDisplayIndex: Int = 0
     var patternDisplayTimer: Double = 0.0
 }
-
-// MARK: - Actions
 
 enum LightItUpAction {
     case startGame
@@ -42,8 +41,6 @@ enum LightItUpAction {
     case changeRoundLength(Double)
     case patternCardTapped(id: Int)
 }
-
-// MARK: - Reducer
 
 struct LightItUpReducer {
     static func reduce(currentState: LightItUpState, action: LightItUpAction) -> LightItUpState {
@@ -61,11 +58,15 @@ struct LightItUpReducer {
             newState.isGameOver = false
             newState.windowTimeTracker = 0.0
             newState.showLevelUpOverlay = false
+            newState.hasPatternModeTriggered = false
             newState.isPatternModeActive = false
             newState.patternModeCooldownTracker = 0.0
             newState.patternSequence = []
             newState.userPatternTaps = []
             newState.isShowingPatternSequence = false
+            newState.isShowingPatternResult = false
+            newState.patternResultSuccess = false
+            newState.currentPatternDisplayIndex = 0
             
             newState.cards = (0..<GameLevel.L1.totalCards).map { GameCard(id: $0, isLit: false) }
             if let randomIdx = newState.cards.indices.randomElement() {
@@ -89,40 +90,63 @@ struct LightItUpReducer {
             
 
         case .patternCardTapped(let clickedId):
-            guard newState.isPatternModeActive && !newState.isShowingPatternSequence else { return newState }
+            guard newState.isPatternModeActive && !newState.isShowingPatternSequence && !newState.isShowingPatternResult else { return newState }
             
             newState.userPatternTaps.append(clickedId)
             let tapIndex = newState.userPatternTaps.count - 1
             
             if newState.patternSequence[tapIndex] == clickedId {
                 // Correct tap
-                // Temporarily flash it? Let's just rely on button feedback.
+                if let idx = newState.cards.firstIndex(where: { $0.id == clickedId }) {
+                    newState.cards[idx].isSuccess = true
+                }
+                
                 if newState.userPatternTaps.count == newState.patternSequence.count {
                     newState.score += 20
+                    newState.isShowingPatternResult = true
+                    newState.patternResultSuccess = true
+                    newState.patternDisplayTimer = 0.0
+                }
+            } else {
+                // Wrong tap
+                if let idx = newState.cards.firstIndex(where: { $0.id == clickedId }) {
+                    newState.cards[idx].isFailure = true
+                }
+                newState.score = max(0, newState.score - 10)
+                newState.isShowingPatternResult = true
+                newState.patternResultSuccess = false
+                newState.patternDisplayTimer = 0.0
+            }
+            
+        case .timerTicked(let timeStep):
+            guard (newState.isPlaying || newState.isShowingPatternSequence || newState.isShowingPatternResult) && !newState.isGameOver else { return newState }
+            
+            if newState.isShowingPatternResult {
+                newState.patternDisplayTimer += timeStep
+                if newState.patternDisplayTimer >= 1.5 { // Wait 1.5s so user can see result
+                    newState.isShowingPatternResult = false
                     newState.isPatternModeActive = false
                     newState.cards = newState.prePatternCards
                     newState.currentLevel = newState.prePatternLevel
                     newState.windowTimeTracker = 0.0
                 }
-            } else {
-                // Wrong tap
-                newState.score = max(0, newState.score - 10)
-                newState.isPatternModeActive = false
-                newState.cards = newState.prePatternCards
-                newState.currentLevel = newState.prePatternLevel
-                newState.windowTimeTracker = 0.0
+                return newState
             }
-            
-        case .timerTicked(let timeStep):
-            guard (newState.isPlaying || newState.isShowingPatternSequence) && !newState.isGameOver else { return newState }
             
             if newState.isShowingPatternSequence {
                 newState.patternDisplayTimer += timeStep
-                if newState.patternDisplayTimer >= 0.8 {
-                    newState.patternDisplayTimer = 0.0
+                
+                // Turn off the card halfway through the interval to create a clear visual gap
+                if newState.patternDisplayTimer >= 0.4 && newState.patternDisplayTimer < 0.5 {
                     for i in 0..<newState.cards.count {
                         newState.cards[i].isLit = false
                     }
+                }
+                
+                // Move to next card every 0.8 seconds
+                if newState.patternDisplayTimer >= 0.8 {
+                    newState.patternDisplayTimer = 0.0
+                    
                     if newState.currentPatternDisplayIndex < newState.patternSequence.count {
                         let cardToLight = newState.patternSequence[newState.currentPatternDisplayIndex]
                         newState.cards[cardToLight].isLit = true
@@ -134,18 +158,23 @@ struct LightItUpReducer {
                 return newState
             }
             
+            if newState.isPatternModeActive {
+                return newState
+            }
+            
             newState.totalTimeElapsed += timeStep
             newState.windowTimeTracker += timeStep
             newState.patternModeCooldownTracker += timeStep
             
-            // Randomly trigger mid-game pattern mode
-            if !newState.isPatternModeActive && !newState.isShowingPatternSequence && newState.patternModeCooldownTracker > 10.0 {
+            // Randomly trigger mid-game pattern mode once per game
+            if !newState.hasPatternModeTriggered && !newState.isPatternModeActive && !newState.isShowingPatternSequence && newState.patternModeCooldownTracker > 10.0 {
                 if Double.random(in: 0...1) < 0.05 { // ~50% chance per second
+                    newState.hasPatternModeTriggered = true
                     newState.prePatternCards = newState.cards
                     newState.prePatternLevel = newState.currentLevel
                     newState.isPatternModeActive = true
                     newState.cards = (0..<16).map { GameCard(id: $0, isLit: false) }
-                    newState.patternSequence = (0..<5).map { _ in Int.random(in: 0..<16) }
+                    newState.patternSequence = (0..<4).map { _ in Int.random(in: 0..<16) }
                     newState.userPatternTaps = []
                     newState.isShowingPatternSequence = true
                     newState.currentPatternDisplayIndex = 0
