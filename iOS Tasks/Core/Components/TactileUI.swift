@@ -131,6 +131,7 @@ struct TactileSecondaryButtonStyle: ButtonStyle {
 /// A unified game over modal to be used across all games
 struct TactileGameOverModal: View {
     let score: Int
+    let gameName: String
     let onMenu: () -> Void
     let onPlayAgain: () -> Void
     
@@ -149,6 +150,22 @@ struct TactileGameOverModal: View {
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(Color.gray)
                 }
+                
+                ShareLink(item: "I just scored \(score) on \(gameName)! Can you beat me?") {
+                    HStack {
+                        Image(systemName: "square.and.arrow.up")
+                        Text("SHARE SCORE")
+                    }
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundColor(brutalistDark)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                }
+                .background(
+                    cautionYellow
+                        .border(brutalistDark, width: 2)
+                        .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
+                )
                 
                 HStack(spacing: 12) {
                     Button(action: onMenu) {

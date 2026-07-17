@@ -286,6 +286,7 @@ struct QuizRushView: View {
         VStack(spacing: 32) {
             TactileGameOverModal(
                 score: state.score,
+                gameName: "Quiz Rush",
                 onMenu: { currentRoute = .mainMenu },
                 onPlayAgain: {
                     state = QuizRushReducer.reduce(currentState: state, action: .randomizeSetup)

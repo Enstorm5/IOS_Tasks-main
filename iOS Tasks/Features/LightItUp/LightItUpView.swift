@@ -294,6 +294,7 @@ struct LightItUpView: View {
     private func gameOverDialog() -> some View {
         TactileGameOverModal(
             score: state.score,
+            gameName: "Light It Up",
             onMenu: { currentRoute = .mainMenu },
             onPlayAgain: { state = LightItUpReducer.reduce(currentState: state, action: .startGame) }
         )

@@ -189,6 +189,7 @@ struct TapFrenzyView: View {
             if state.isGameOver {
                 TactileGameOverModal(
                     score: state.score,
+                    gameName: "Tap Frenzy",
                     onMenu: { currentRoute = .mainMenu },
                     onPlayAgain: { onGameAction(.startOrRestartGame) }
                 )
