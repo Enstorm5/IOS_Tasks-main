@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 struct QuizRushView: View {
     @Binding var currentRoute: GameRoute
@@ -356,6 +355,4 @@ struct QuizRushView: View {
         
         return .white
     }
-    
-    // Tactile components moved to TactileUI.swift
 }

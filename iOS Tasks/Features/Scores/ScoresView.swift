@@ -7,13 +7,6 @@ struct ScoresView: View {
     
     @State private var selectedGame: GameRoute = .tapFrenzy
     
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        return formatter
-    }()
-    
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -239,7 +232,7 @@ struct ScoresView: View {
     
     private func recentGameRow(entry: ScoreEntry) -> some View {
         HStack {
-            Text(gameModeLabel(entry.game))
+            Text(GameRoute.fromRawValue(entry.game)?.shortName ?? entry.game.uppercased())
                 .font(.system(size: 10, weight: .black))
                 .foregroundColor(.white)
                 .padding(.horizontal, 8)
@@ -252,7 +245,7 @@ struct ScoresView: View {
                 .font(.system(size: 16, weight: .black, design: .monospaced))
                 .foregroundColor(brutalistDark)
             
-            Text(dateFormatter.string(from: entry.date))
+            Text(sharedDateFormatter.string(from: entry.date))
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(Color.gray)
                 .frame(width: 90, alignment: .trailing)
@@ -334,7 +327,7 @@ struct ScoresView: View {
                         .font(.system(size: 22, weight: .black))
                         .foregroundColor(brutalistDark)
                     
-                    Text(dateFormatter.string(from: entry.date))
+                    Text(sharedDateFormatter.string(from: entry.date))
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color(red: 100/255, green: 116/255, blue: 139/255))
                 }
@@ -347,14 +340,5 @@ struct ScoresView: View {
     
 
     
-    // MARK: - Helpers
-    
-    private func gameModeLabel(_ game: String) -> String {
-        switch game {
-        case "tapFrenzy": return "TAP"
-        case "lightItUp": return "LIGHT"
-        case "quizRush": return "QUIZ"
-        default: return game.uppercased()
-        }
-    }
+
 }

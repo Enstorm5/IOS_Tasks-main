@@ -62,36 +62,31 @@ struct SettingsView: View {
             }
             
             TactileCard {
-                VStack(spacing: 0) {
-                    Toggle(isOn: $reminderEnabled) {
-                        Text("Daily Reminder")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(brutalistDark)
-                    }
-                    .tint(cautionYellow)
-                    .padding(16)
-                    .onChange(of: reminderEnabled) { enabled in
-                        handleToggleChange(enabled: enabled)
-                    }
-                    
-                    if reminderEnabled {
-                        Rectangle()
-                            .fill(brutalistDark)
-                            .frame(height: 2)
-                        
-                        DatePicker(
-                            "Time",
-                            selection: $reminderDate,
-                            displayedComponents: .hourAndMinute
-                        )
+                Toggle(isOn: $reminderEnabled) {
+                    Text("Daily Reminder")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(brutalistDark)
-                        .padding(16)
-                        .background(panelBg)
-                        .onChange(of: reminderDate) { newDate in
-                            reminderTimeInterval = newDate.timeIntervalSince1970
-                            updateSchedule()
-                        }
+                }
+                .tint(cautionYellow)
+                .padding(16)
+                .onChange(of: reminderEnabled) { enabled in
+                    handleToggleChange(enabled: enabled)
+                }
+            }
+            
+            if reminderEnabled {
+                TactileCard {
+                    DatePicker(
+                        "Time",
+                        selection: $reminderDate,
+                        displayedComponents: .hourAndMinute
+                    )
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(brutalistDark)
+                    .padding(16)
+                    .onChange(of: reminderDate) { newDate in
+                        reminderTimeInterval = newDate.timeIntervalSince1970
+                        updateSchedule()
                     }
                 }
             }

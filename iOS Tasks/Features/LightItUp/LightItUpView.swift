@@ -68,9 +68,6 @@ struct LightItUpView: View {
         .onReceive(timer) { _ in
             if state.isPlaying {
                 state = LightItUpReducer.reduce(currentState: state, action: .timerTicked(timeStep: 0.1))
-                if state.isGameOver {
-                    onGameFinish(state.score)
-                }
             }
             
             // Subtle pulse for active elements
@@ -80,6 +77,11 @@ struct LightItUpView: View {
         }
         .sheet(isPresented: $showSettings) {
             settingsView()
+        }
+        .onChange(of: state.isGameOver) { isOver in
+            if isOver {
+                onGameFinish(state.score)
+            }
         }
     }
     
@@ -280,11 +282,7 @@ struct LightItUpView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                 }
-                .background(
-                    cautionYellow
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-                )
+                .buttonStyle(TactileButtonStyle())
             }
             .padding(32)
         }
@@ -332,7 +330,6 @@ struct LightItUpView: View {
         .presentationDetents([.fraction(0.3)])
     }
     
-    // Tactile Card Modifier moved to TactileUI.swift
 }
 
 // MARK: - Preview Engine

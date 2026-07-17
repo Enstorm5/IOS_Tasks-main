@@ -2,10 +2,7 @@ import SwiftUI
 
 struct MainMenuView: View {
     @Binding var currentRoute: GameRoute
-    @Binding var bestTapFrenzy: Int
-    @Binding var bestLightItUp: Int
-    @Binding var bestQuizRush: Int
-    let onTapFrenzySelected: () -> Void
+    @EnvironmentObject var scoreManager: ScoreManager
     
     var body: some View {
         VStack(spacing: 0) {
@@ -41,7 +38,7 @@ struct MainMenuView: View {
             
             Spacer()
             
-            Text("\(bestTapFrenzy + bestLightItUp + bestQuizRush) PTS")
+            Text("\(scoreManager.totalBestScore) PTS")
                 .font(.system(size: 16, weight: .black))
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 16)
@@ -75,7 +72,7 @@ struct MainMenuView: View {
                     featuredCardContent(
                         title: "TAP FRENZY",
                         desc: "Tactical tapping challenge. Compete globally.",
-                        time: "REC: \(bestTapFrenzy)"
+                        time: "REC: \(scoreManager.bestTapFrenzy)"
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -84,7 +81,7 @@ struct MainMenuView: View {
                     featuredCardContent(
                         title: "LIGHT IT UP",
                         desc: "High-speed reflex memory. Endless levels.",
-                        time: "REC: \(bestLightItUp)"
+                        time: "REC: \(scoreManager.bestLightItUp)"
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -93,7 +90,7 @@ struct MainMenuView: View {
                     featuredCardContent(
                         title: "QUIZ RUSH",
                         desc: "Live trivia,Answer from multiple choices.",
-                        time: "REC: \(bestQuizRush)"
+                        time: "REC: \(scoreManager.bestQuizRush)"
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -135,8 +132,4 @@ struct MainMenuView: View {
             .padding(16)
         }
     }
-    
-    // Tactile components moved to TactileUI.swift
-    
-    // Tactile components moved to TactileUI.swift
 }

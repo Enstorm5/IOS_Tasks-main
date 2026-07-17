@@ -261,6 +261,4 @@ struct TapFrenzyView: View {
             }
         }
     }
-    
-    // Tactile Panel Modifier removed and integrated to TactileUI.swift
 }

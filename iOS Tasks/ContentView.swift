@@ -1,6 +1,5 @@
 import SwiftUI
 import Combine
-import MapKit
 
 enum AppTab: Int {
     case home
@@ -13,15 +12,8 @@ struct ContentView: View {
     @State private var selectedTab: AppTab = .home
     
     @State private var homePath = NavigationPath()
-    @State private var statsPath = NavigationPath()
-    @State private var mapPath = NavigationPath()
-    @State private var settingsPath = NavigationPath()
     
     @State private var tapFrenzyState = TapFrenzyState()
-
-    @AppStorage("highScore_tapFrenzy") private var bestTapFrenzy: Int = 0
-    @AppStorage("highScore_lightItUp") private var bestLightItUp: Int = 0
-    @AppStorage("highScore_quizRush") private var bestQuizRush: Int = 0
     
     @StateObject private var scoreManager = ScoreManager()
     @StateObject private var locationManager = LocationManager()
@@ -44,16 +36,7 @@ struct ContentView: View {
         VStack(spacing: 0) {
             ZStack {
                 NavigationStack(path: $homePath) {
-                    MainMenuView(
-                        currentRoute: homeRouteBinding,
-                        bestTapFrenzy: $bestTapFrenzy,
-                        bestLightItUp: $bestLightItUp,
-                        bestQuizRush: $bestQuizRush,
-                        onTapFrenzySelected: {
-                            tapFrenzyState = TapFrenzyState()
-                            homePath.append(GameRoute.tapFrenzy)
-                        }
-                    )
+                    MainMenuView(currentRoute: homeRouteBinding)
                     .navigationDestination(for: GameRoute.self) { route in
                         destination(for: route)
                     }
@@ -62,21 +45,21 @@ struct ContentView: View {
                 .opacity(selectedTab == .home ? 1 : 0)
                 .allowsHitTesting(selectedTab == .home)
                 
-                NavigationStack(path: $statsPath) {
+                NavigationStack {
                     ScoresView(currentRoute: .constant(.scores))
                         .navigationBarHidden(true)
                 }
                 .opacity(selectedTab == .stats ? 1 : 0)
                 .allowsHitTesting(selectedTab == .stats)
                 
-                NavigationStack(path: $mapPath) {
+                NavigationStack {
                     MapView()
                         .navigationBarHidden(true)
                 }
                 .opacity(selectedTab == .map ? 1 : 0)
                 .allowsHitTesting(selectedTab == .map)
                 
-                NavigationStack(path: $settingsPath) {
+                NavigationStack {
                     SettingsView()
                         .navigationBarHidden(true)
                 }
@@ -95,9 +78,6 @@ struct ContentView: View {
             let wasGameOver = tapFrenzyState.isGameOver
             tapFrenzyState = TapFrenzyReducer.reduce(currentState: tapFrenzyState, action: .timerTicked(timeStep: 0.1))
             if !wasGameOver && tapFrenzyState.isGameOver {
-                if tapFrenzyState.score > bestTapFrenzy {
-                    bestTapFrenzy = tapFrenzyState.score
-                }
                 scoreManager.addScore(tapFrenzyState.score, for: .tapFrenzy, location: locationManager.lastLocation)
             }
         }
@@ -121,7 +101,12 @@ struct ContentView: View {
     
     func tabButton(tab: AppTab, icon: String, title: String) -> some View {
         let isSelected = selectedTab == tab
-        return Button(action: { selectedTab = tab }) {
+        return Button(action: {
+            if tab == .home {
+                homePath = NavigationPath() // Reset to root if in game
+            }
+            selectedTab = tab
+        }) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 22))
@@ -161,9 +146,6 @@ struct ContentView: View {
             LightItUpView(
                 currentRoute: homeRouteBinding,
                 onGameFinish: { score in
-                    if score > bestLightItUp {
-                        bestLightItUp = score
-                    }
                     scoreManager.addScore(score, for: .lightItUp, location: locationManager.lastLocation)
                 }
             )
@@ -172,9 +154,6 @@ struct ContentView: View {
             QuizRushView(
                 currentRoute: homeRouteBinding,
                 onGameFinish: { score in
-                    if score > bestQuizRush {
-                        bestQuizRush = score
-                    }
                     scoreManager.addScore(score, for: .quizRush, location: locationManager.lastLocation)
                 }
             )

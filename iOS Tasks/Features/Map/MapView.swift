@@ -6,13 +6,6 @@ struct MapView: View {
     @State private var selectedEntry: ScoreEntry?
     @State private var cameraPosition: MapCameraPosition = .automatic
     
-    private let dateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateStyle = .short
-        f.timeStyle = .short
-        return f
-    }()
-    
     var body: some View {
         VStack(spacing: 0) {
             mapTopBar()
@@ -85,7 +78,7 @@ struct MapView: View {
         TactileCard {
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(gameModeLabel(entry.game))
+                    Text(GameRoute.fromRawValue(entry.game)?.displayName ?? entry.game.uppercased())
                         .font(.system(size: 10, weight: .black))
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
@@ -96,7 +89,7 @@ struct MapView: View {
                         .font(.system(size: 28, weight: .black, design: .monospaced))
                         .foregroundColor(brutalistDark)
                     
-                    Text(dateFormatter.string(from: entry.date))
+                    Text(sharedDateFormatter.string(from: entry.date))
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(Color.gray)
                 }
@@ -117,12 +110,5 @@ struct MapView: View {
         .padding(.bottom, 12)
     }
     
-    private func gameModeLabel(_ game: String) -> String {
-        switch game {
-        case "tapFrenzy": return "TAP FRENZY"
-        case "lightItUp": return "LIGHT IT UP"
-        case "quizRush": return "QUIZ RUSH"
-        default: return game.uppercased()
-        }
-    }
+
 }
