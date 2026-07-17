@@ -96,12 +96,8 @@ struct MapView: View {
                     .foregroundColor(brutalistDark)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(
-                        cautionYellow
-                            .border(brutalistDark, width: 2)
-                            .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                    )
             }
+            .buttonStyle(TactileButtonStyle())
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

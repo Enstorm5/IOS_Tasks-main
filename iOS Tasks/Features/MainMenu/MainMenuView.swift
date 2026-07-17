@@ -43,11 +43,7 @@ struct MainMenuView: View {
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 6)
-                .background(
-                    cautionYellow
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                )
+                .tactileBadge()
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

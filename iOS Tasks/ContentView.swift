@@ -112,16 +112,20 @@ struct ContentView: View {
                     .font(.system(size: 22))
                     .foregroundColor(isSelected ? cautionYellow : Color.gray)
                 
-                Text(title)
-                    .font(.system(size: 11, weight: .black))
-                    .foregroundColor(isSelected ? brutalistDark : Color.gray)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(
-                        (isSelected ? cautionYellow : Color.clear)
-                            .border(isSelected ? brutalistDark : Color.clear, width: isSelected ? 2 : 0)
-                            .shadow(color: isSelected ? brutalistDark : .clear, radius: 0, x: isSelected ? 2 : 0, y: isSelected ? 2 : 0)
-                    )
+                if isSelected {
+                    Text(title)
+                        .font(.system(size: 11, weight: .black))
+                        .foregroundColor(brutalistDark)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .tactileBadge()
+                } else {
+                    Text(title)
+                        .font(.system(size: 11, weight: .black))
+                        .foregroundColor(Color.gray)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                }
             }
         }
         .frame(maxWidth: .infinity)

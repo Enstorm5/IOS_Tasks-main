@@ -54,9 +54,15 @@ struct LightItUpView: View {
             }
             
             // Start / Welcome Dialog
-            if !state.isPlaying && !state.isGameOver {
+            if !state.isPlaying && !state.isGameOver && !state.isShowingPatternOffer && !state.isPatternModeActive {
                 Color.white.opacity(0.6).ignoresSafeArea() // dim background
                 startDialog()
+            }
+            
+            // Pattern Offer Modal
+            if state.isShowingPatternOffer {
+                Color.white.opacity(0.6).ignoresSafeArea()
+                patternOfferDialog()
             }
             
             // Game Over Dialog
@@ -95,11 +101,7 @@ struct LightItUpView: View {
                     .foregroundColor(brutalistDark)
                     .frame(width: 44, height: 44)
             }
-            .background(
-                Color.white
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-            )
+            .buttonStyle(TactileIconButtonStyle())
             
             Text("LEVEL \(state.currentLevel.rawValue)")
                 .font(.system(size: 20, weight: .black, design: .default))
@@ -115,11 +117,7 @@ struct LightItUpView: View {
                     .foregroundColor(brutalistDark)
                     .frame(width: 44, height: 44)
             }
-            .background(
-                (state.isPlaying ? Color.gray.opacity(0.2) : Color.white)
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: state.isPlaying ? .clear : brutalistDark, radius: 0, x: 2, y: 2)
-            )
+            .buttonStyle(TactileIconButtonStyle())
             .disabled(state.isPlaying)
         }
         .padding(.horizontal, 20)
@@ -210,14 +208,21 @@ struct LightItUpView: View {
     }
     
     private func gridView() -> some View {
-        ZStack {
+        let columns = state.isPatternModeActive 
+            ? Array(repeating: GridItem(.flexible(), spacing: 8), count: 5)
+            : state.currentLevel.gridColumns
+        let cardHeight: CGFloat = state.isPatternModeActive ? 60 : 100
+        
+        return ZStack {
             // Structural Accents (Corner brackets) for the grid container
             tactileCornerBrackets(color: .blue)
             
-            LazyVGrid(columns: state.currentLevel.gridColumns, spacing: 16) {
+            LazyVGrid(columns: columns, spacing: state.isPatternModeActive ? 8 : 16) {
                 ForEach(state.cards) { card in
                     Button(action: {
-                        if state.isPlaying {
+                        if state.isPatternModeActive {
+                            state = LightItUpReducer.reduce(currentState: state, action: .patternCardTapped(id: card.id))
+                        } else if state.isPlaying {
                             state = LightItUpReducer.reduce(currentState: state, action: .cardTapped(id: card.id))
                         }
                     }) {
@@ -236,7 +241,7 @@ struct LightItUpView: View {
                                     .foregroundColor(Color(red: 226/255, green: 232/255, blue: 240/255))
                             }
                         }
-                        .frame(height: 100)
+                        .frame(height: cardHeight)
                         .border(brutalistDark, width: 2)
                         .background(card.isLit ? Color(red: 13/255, green: 211/255, blue: 225/255) : .white)
                         .shadow(color: card.isLit ? brutalistDark : .clear, radius: 0, x: card.isLit ? 6 : 0, y: card.isLit ? 6 : 0)
@@ -289,6 +294,49 @@ struct LightItUpView: View {
         .padding(.horizontal, 24)
     }
     
+    private func patternOfferDialog() -> some View {
+        TactileCard {
+            VStack(spacing: 24) {
+                Image(systemName: "brain.head.profile")
+                    .font(.system(size: 50))
+                    .foregroundColor(.purple)
+                
+                VStack(spacing: 8) {
+                    Text("PATTERN MODE")
+                        .font(.system(size: 28, weight: .black))
+                        .foregroundColor(brutalistDark)
+                    Text("Double or nothing! Memorize a 5-step sequence on a 5x5 grid. Win = 2x Score. Lose = Half Score.")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color.gray)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                }
+                
+                HStack(spacing: 16) {
+                    Button(action: { state = LightItUpReducer.reduce(currentState: state, action: .declinePatternMode) }) {
+                        Text("DECLINE")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundColor(brutalistDark)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                    }
+                    .buttonStyle(TactileSecondaryButtonStyle())
+                    
+                    Button(action: { state = LightItUpReducer.reduce(currentState: state, action: .acceptPatternMode) }) {
+                        Text("ACCEPT")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundColor(brutalistDark)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                    }
+                    .buttonStyle(TactileButtonStyle())
+                }
+            }
+            .padding(32)
+        }
+        .padding(.horizontal, 24)
+    }
+    
     private func gameOverDialog() -> some View {
         TactileGameOverModal(
             score: state.score,
@@ -313,11 +361,7 @@ struct LightItUpView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
                     }
-                    .background(
-                        (state.roundLength == duration ? cautionYellow : Color.white)
-                            .border(brutalistDark, width: 2)
-                            .shadow(color: state.roundLength == duration ? brutalistDark : .clear, radius: 0, x: 3, y: 3)
-                    )
+                    .buttonStyle(TactileSegmentButtonStyle(isSelected: state.roundLength == duration))
                 }
             }
             

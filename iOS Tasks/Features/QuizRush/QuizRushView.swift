@@ -153,11 +153,7 @@ struct QuizRushView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
         }
-        .background(
-            (state.selectedCategory == id ? cautionYellow : Color.white)
-                .border(brutalistDark, width: 2)
-                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-        )
+        .buttonStyle(TactileSegmentButtonStyle(isSelected: state.selectedCategory == id))
     }
     
     private func difficultyButton(id: String, label: String) -> some View {
@@ -170,11 +166,7 @@ struct QuizRushView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
         }
-        .background(
-            (state.selectedDifficulty == id ? cautionYellow : Color.white)
-                .border(brutalistDark, width: 2)
-                .shadow(color: brutalistDark, radius: 0, x: 2, y: 2)
-        )
+        .buttonStyle(TactileSegmentButtonStyle(isSelected: state.selectedDifficulty == id))
     }
     
     private func topBar() -> some View {
@@ -211,11 +203,7 @@ struct QuizRushView: View {
                     .foregroundColor(brutalistDark)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 6)
-                    .background(
-                        cautionYellow
-                            .border(brutalistDark, width: 2)
-                            .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                    )
+                    .tactileBadge(color: cautionYellow)
             }
         }
         .padding(.horizontal, 20)
@@ -267,13 +255,8 @@ struct QuizRushView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 20)
                                 .padding(.horizontal, 16)
-                                .background(
-                                    answerBackgroundColor(for: answer)
-                                        .border(brutalistDark, width: 2)
-                                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                                )
                         }
-                        .buttonStyle(TactileSecondaryButtonStyle())
+                        .buttonStyle(TactileDynamicButtonStyle(color: answerBackgroundColor(for: answer)))
                         .disabled(isAnswering)
                     }
                 }

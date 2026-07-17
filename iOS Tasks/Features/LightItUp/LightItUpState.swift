@@ -21,6 +21,15 @@ struct LightItUpState {
     var windowTimeTracker: Double = 0.0
     var showLevelUpOverlay: Bool = false
     var levelUpOverlayTracker: Double = 0.0
+    
+    // Pattern Memory Mode
+    var isShowingPatternOffer: Bool = false
+    var isPatternModeActive: Bool = false
+    var patternSequence: [Int] = []
+    var userPatternTaps: [Int] = []
+    var isShowingPatternSequence: Bool = false
+    var currentPatternDisplayIndex: Int = 0
+    var patternDisplayTimer: Double = 0.0
 }
 
 // MARK: - Actions
@@ -30,6 +39,9 @@ enum LightItUpAction {
     case cardTapped(id: Int)
     case timerTicked(timeStep: Double)
     case changeRoundLength(Double)
+    case acceptPatternMode
+    case declinePatternMode
+    case patternCardTapped(id: Int)
 }
 
 // MARK: - Reducer
@@ -51,6 +63,11 @@ struct LightItUpReducer {
             newState.isGameOver = false
             newState.windowTimeTracker = 0.0
             newState.showLevelUpOverlay = false
+            newState.isShowingPatternOffer = false
+            newState.isPatternModeActive = false
+            newState.patternSequence = []
+            newState.userPatternTaps = []
+            newState.isShowingPatternSequence = false
             
             newState.cards = (0..<GameLevel.L1.totalCards).map { GameCard(id: $0, isLit: false) }
             if let randomIdx = newState.cards.indices.randomElement() {
@@ -74,8 +91,61 @@ struct LightItUpReducer {
                 }
             }
             
+        case .acceptPatternMode:
+            newState.isShowingPatternOffer = false
+            newState.isPatternModeActive = true
+            newState.cards = (0..<25).map { GameCard(id: $0, isLit: false) }
+            newState.patternSequence = (0..<5).map { _ in Int.random(in: 0..<25) }
+            newState.userPatternTaps = []
+            newState.isShowingPatternSequence = true
+            newState.currentPatternDisplayIndex = 0
+            newState.patternDisplayTimer = 0.0
+            
+        case .declinePatternMode:
+            newState.isShowingPatternOffer = false
+            newState.isGameOver = true
+            
+        case .patternCardTapped(let clickedId):
+            guard newState.isPatternModeActive && !newState.isShowingPatternSequence else { return newState }
+            
+            newState.userPatternTaps.append(clickedId)
+            let tapIndex = newState.userPatternTaps.count - 1
+            
+            if newState.patternSequence[tapIndex] == clickedId {
+                // Correct tap
+                // Temporarily flash it? Let's just rely on button feedback.
+                if newState.userPatternTaps.count == newState.patternSequence.count {
+                    newState.score *= 2
+                    newState.isPatternModeActive = false
+                    newState.isGameOver = true
+                }
+            } else {
+                // Wrong tap
+                newState.score /= 2
+                newState.isPatternModeActive = false
+                newState.isGameOver = true
+            }
+            
         case .timerTicked(let timeStep):
-            guard newState.isPlaying && !newState.isGameOver else { return newState }
+            guard (newState.isPlaying || newState.isShowingPatternSequence) && !newState.isGameOver else { return newState }
+            
+            if newState.isShowingPatternSequence {
+                newState.patternDisplayTimer += timeStep
+                if newState.patternDisplayTimer >= 0.8 {
+                    newState.patternDisplayTimer = 0.0
+                    for i in 0..<newState.cards.count {
+                        newState.cards[i].isLit = false
+                    }
+                    if newState.currentPatternDisplayIndex < newState.patternSequence.count {
+                        let cardToLight = newState.patternSequence[newState.currentPatternDisplayIndex]
+                        newState.cards[cardToLight].isLit = true
+                        newState.currentPatternDisplayIndex += 1
+                    } else {
+                        newState.isShowingPatternSequence = false
+                    }
+                }
+                return newState
+            }
             
             newState.totalTimeElapsed += timeStep
             newState.windowTimeTracker += timeStep
@@ -89,7 +159,7 @@ struct LightItUpReducer {
             
             if newState.totalTimeElapsed >= newState.roundLength {
                 newState.isPlaying = false
-                newState.isGameOver = true
+                newState.isShowingPatternOffer = true
                 return newState
             }
             

@@ -128,6 +128,81 @@ struct TactileSecondaryButtonStyle: ButtonStyle {
     }
 }
 
+/// Success Action Button (Green background, thick border, drop shadow)
+struct TactileSuccessButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                Color.green
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: configuration.isPressed ? 0 : 3, y: configuration.isPressed ? 0 : 3)
+            )
+            .offset(x: configuration.isPressed ? 3 : 0, y: configuration.isPressed ? 3 : 0)
+    }
+}
+
+/// Dynamic Color Action Button
+struct TactileDynamicButtonStyle: ButtonStyle {
+    var color: Color
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                color
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: configuration.isPressed ? 0 : 3, y: configuration.isPressed ? 0 : 3)
+            )
+            .offset(x: configuration.isPressed ? 3 : 0, y: configuration.isPressed ? 3 : 0)
+    }
+}
+
+// MARK: - Badges & Labels
+
+struct TactileBadgeModifier: ViewModifier {
+    var color: Color
+    func body(content: Content) -> some View {
+        content
+            .background(
+                color
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+            )
+    }
+}
+
+extension View {
+    func tactileBadge(color: Color = cautionYellow) -> some View {
+        self.modifier(TactileBadgeModifier(color: color))
+    }
+}
+
+/// Icon Action Button (White/Light background, smaller shadow, used for top bar icons)
+struct TactileIconButtonStyle: ButtonStyle {
+    var isSelected: Bool = false
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                (isSelected ? cautionYellow : Color.white)
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: configuration.isPressed ? 0 : 2, y: configuration.isPressed ? 0 : 2)
+            )
+            .offset(x: configuration.isPressed ? 2 : 0, y: configuration.isPressed ? 2 : 0)
+    }
+}
+
+/// Segment Toggle Button Style
+struct TactileSegmentButtonStyle: ButtonStyle {
+    var isSelected: Bool
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                (isSelected ? cautionYellow : Color.white)
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: configuration.isPressed ? 0 : 2, y: configuration.isPressed ? 0 : 2)
+            )
+            .offset(x: configuration.isPressed ? 2 : 0, y: configuration.isPressed ? 2 : 0)
+    }
+}
+
 /// A unified game over modal to be used across all games
 struct TactileGameOverModal: View {
     let score: Int
@@ -161,11 +236,7 @@ struct TactileGameOverModal: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                 }
-                .background(
-                    cautionYellow
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-                )
+                .buttonStyle(TactileButtonStyle())
                 
                 HStack(spacing: 12) {
                     Button(action: onMenu) {
@@ -175,11 +246,7 @@ struct TactileGameOverModal: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
                     }
-                    .background(
-                        Color.white
-                            .border(brutalistDark, width: 2)
-                            .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-                    )
+                    .buttonStyle(TactileSecondaryButtonStyle())
                     
                     Button(action: onPlayAgain) {
                         Text("PLAY AGAIN")
@@ -188,11 +255,7 @@ struct TactileGameOverModal: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
                     }
-                    .background(
-                        Color.green
-                            .border(brutalistDark, width: 2)
-                            .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-                    )
+                    .buttonStyle(TactileSuccessButtonStyle())
                 }
             }
             .padding(32)

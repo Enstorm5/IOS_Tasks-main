@@ -48,11 +48,7 @@ struct ScoresView: View {
                 .foregroundColor(brutalistDark)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(
-                    cautionYellow
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-                )
+                .tactileBadge()
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
@@ -231,30 +227,28 @@ struct ScoresView: View {
     }
     
     private func recentGameRow(entry: ScoreEntry) -> some View {
-        HStack {
-            Text(GameRoute.fromRawValue(entry.game)?.shortName ?? entry.game.uppercased())
-                .font(.system(size: 10, weight: .black))
-                .foregroundColor(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(brutalistDark)
-            
-            Spacer()
-            
-            Text("\(entry.score) PTS")
-                .font(.system(size: 16, weight: .black, design: .monospaced))
-                .foregroundColor(brutalistDark)
-            
-            Text(sharedDateFormatter.string(from: entry.date))
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(Color.gray)
-                .frame(width: 90, alignment: .trailing)
+        TactileCard {
+            HStack {
+                Text(GameRoute.fromRawValue(entry.game)?.shortName ?? entry.game.uppercased())
+                    .font(.system(size: 10, weight: .black))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(brutalistDark)
+                
+                Spacer()
+                
+                Text("\(entry.score) PTS")
+                    .font(.system(size: 16, weight: .black, design: .monospaced))
+                    .foregroundColor(brutalistDark)
+                
+                Text(sharedDateFormatter.string(from: entry.date))
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(Color.gray)
+                    .frame(width: 90, alignment: .trailing)
+            }
+            .padding(12)
         }
-        .padding(12)
-        .background(
-            panelBg
-                .border(brutalistDark, width: 2)
-        )
     }
     
     // MARK: - Leaderboard (Per-Game)
@@ -307,11 +301,7 @@ struct ScoresView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
         }
-        .background(
-            (isSelected ? cautionYellow : Color.white)
-                .border(isSelected ? brutalistDark : Color(red: 203/255, green: 213/255, blue: 225/255), width: 2)
-                .shadow(color: isSelected ? brutalistDark : .clear, radius: 0, x: 2, y: 2)
-        )
+        .buttonStyle(TactileSegmentButtonStyle(isSelected: isSelected))
     }
     
     private func scoreCard(entry: ScoreEntry, rank: Int) -> some View {
