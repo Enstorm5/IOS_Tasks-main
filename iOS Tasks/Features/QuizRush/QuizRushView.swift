@@ -19,7 +19,7 @@ struct QuizRushView: View {
             tactilePixelBackground()
             
             VStack {
-                topBar()
+                Spacer().frame(height: 80)
                 Spacer()
                 
                 switch state.viewState {
@@ -68,6 +68,7 @@ struct QuizRushView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
         }
+        .overlay(topBar(), alignment: .top)
     }
     
     private func loadData() {
@@ -172,15 +173,18 @@ struct QuizRushView: View {
     private func topBar() -> some View {
         HStack {
             Button(action: { currentRoute = .mainMenu }) {
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .black))
-                    Text("ARCADE")
-                        .font(.system(size: 20, weight: .black, design: .default))
-                        .italic()
-                }
-                .foregroundColor(brutalistDark)
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .black))
+                    .foregroundColor(brutalistDark)
+                    .frame(width: 44, height: 44)
             }
+            .buttonStyle(TactileIconButtonStyle())
+            
+            Text("ARCADE")
+                .font(.system(size: 20, weight: .black, design: .default))
+                .italic()
+                .foregroundColor(brutalistDark)
+                .padding(.leading, 8)
             
             Spacer()
             

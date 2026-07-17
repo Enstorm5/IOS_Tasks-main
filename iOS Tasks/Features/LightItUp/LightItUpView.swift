@@ -19,9 +19,6 @@ struct LightItUpView: View {
             tactilePixelBackground()
             
             VStack(spacing: 0) {
-                // Top Bar
-                topBar()
-                
                 ScrollView {
                     VStack(spacing: 32) {
                         // Technical HUD
@@ -32,7 +29,7 @@ struct LightItUpView: View {
                         
                         Spacer(minLength: 40)
                     }
-                    .padding(.top, 32)
+                    .padding(.top, 100) // Push below the overlay topBar
                 }
             }
             .blur(radius: (state.isGameOver || !state.isPlaying) ? 10 : 0)
@@ -54,15 +51,23 @@ struct LightItUpView: View {
             }
             
             // Start / Welcome Dialog
-            if !state.isPlaying && !state.isGameOver && !state.isShowingPatternOffer && !state.isPatternModeActive {
+            if !state.isPlaying && !state.isGameOver && !state.isPatternModeActive {
                 Color.white.opacity(0.6).ignoresSafeArea() // dim background
                 startDialog()
             }
             
-            // Pattern Offer Modal
-            if state.isShowingPatternOffer {
-                Color.white.opacity(0.6).ignoresSafeArea()
-                patternOfferDialog()
+            // Pattern Mode Banner
+            if state.isPatternModeActive && state.isShowingPatternSequence && state.currentPatternDisplayIndex == 0 {
+                Text("PATTERN MODE!")
+                    .font(.system(size: 36, weight: .black))
+                    .foregroundColor(cautionYellow)
+                    .padding(20)
+                    .background(brutalistDark)
+                    .border(cautionYellow, width: 4)
+                    .rotationEffect(.degrees(-5))
+                    .shadow(color: .black, radius: 0, x: 6, y: 6)
+                    .transition(.scale.combined(with: .opacity))
+                    .zIndex(10)
             }
             
             // Game Over Dialog
@@ -71,6 +76,7 @@ struct LightItUpView: View {
                 gameOverDialog()
             }
         }
+        .overlay(topBar(), alignment: .top)
         .onReceive(timer) { _ in
             if state.isPlaying {
                 state = LightItUpReducer.reduce(currentState: state, action: .timerTicked(timeStep: 0.1))
@@ -103,22 +109,31 @@ struct LightItUpView: View {
             }
             .buttonStyle(TactileIconButtonStyle())
             
-            Text("LEVEL \(state.currentLevel.rawValue)")
+            Text("ARCADE")
                 .font(.system(size: 20, weight: .black, design: .default))
                 .italic()
                 .foregroundColor(brutalistDark)
-                .padding(.leading, 12)
+                .padding(.leading, 8)
             
             Spacer()
             
-            Button(action: { showSettings = true }) {
-                Image(systemName: "slider.horizontal.3")
-                    .font(.system(size: 18, weight: .black))
+            HStack(spacing: 12) {
+                Text("\(state.score) PTS")
+                    .font(.system(size: 16, weight: .black))
                     .foregroundColor(brutalistDark)
-                    .frame(width: 44, height: 44)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+                    .tactileBadge()
+                
+                Button(action: { showSettings = true }) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundColor(brutalistDark)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(TactileIconButtonStyle())
+                .disabled(state.isPlaying)
             }
-            .buttonStyle(TactileIconButtonStyle())
-            .disabled(state.isPlaying)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
@@ -150,25 +165,11 @@ struct LightItUpView: View {
                 
                 Spacer()
                 
-                // Title & Lives
+                // Title
                 VStack(alignment: .center, spacing: 8) {
                     Text("LIGHT IT UP")
                         .font(.system(size: 16, weight: .black))
                         .foregroundColor(brutalistDark)
-                    
-                    HStack(spacing: 8) {
-                        ForEach(0..<3) { idx in
-                            Rectangle()
-                                .fill(idx < state.lives ? Color.red : Color.gray.opacity(0.3))
-                                .frame(width: 12, height: 12)
-                                .border(brutalistDark, width: 1.5)
-                        }
-                    }
-                    
-                    Text("LIVES")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(Color.gray)
-                        .tracking(1)
                 }
                 
                 Spacer()
@@ -207,17 +208,21 @@ struct LightItUpView: View {
         .padding(.horizontal, 20)
     }
     
+    private var gridColumns: [GridItem] {
+        if state.isPatternModeActive {
+            return Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
+        }
+        return state.currentLevel.gridColumns
+    }
+    
     private func gridView() -> some View {
-        let columns = state.isPatternModeActive 
-            ? Array(repeating: GridItem(.flexible(), spacing: 8), count: 5)
-            : state.currentLevel.gridColumns
         let cardHeight: CGFloat = state.isPatternModeActive ? 60 : 100
         
         return ZStack {
             // Structural Accents (Corner brackets) for the grid container
             tactileCornerBrackets(color: .blue)
             
-            LazyVGrid(columns: columns, spacing: state.isPatternModeActive ? 8 : 16) {
+            LazyVGrid(columns: gridColumns, spacing: state.isPatternModeActive ? 8 : 16) {
                 ForEach(state.cards) { card in
                     Button(action: {
                         if state.isPatternModeActive {
@@ -294,48 +299,7 @@ struct LightItUpView: View {
         .padding(.horizontal, 24)
     }
     
-    private func patternOfferDialog() -> some View {
-        TactileCard {
-            VStack(spacing: 24) {
-                Image(systemName: "brain.head.profile")
-                    .font(.system(size: 50))
-                    .foregroundColor(.purple)
-                
-                VStack(spacing: 8) {
-                    Text("PATTERN MODE")
-                        .font(.system(size: 28, weight: .black))
-                        .foregroundColor(brutalistDark)
-                    Text("Double or nothing! Memorize a 5-step sequence on a 5x5 grid. Win = 2x Score. Lose = Half Score.")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(Color.gray)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(4)
-                }
-                
-                HStack(spacing: 16) {
-                    Button(action: { state = LightItUpReducer.reduce(currentState: state, action: .declinePatternMode) }) {
-                        Text("DECLINE")
-                            .font(.system(size: 16, weight: .black))
-                            .foregroundColor(brutalistDark)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                    }
-                    .buttonStyle(TactileSecondaryButtonStyle())
-                    
-                    Button(action: { state = LightItUpReducer.reduce(currentState: state, action: .acceptPatternMode) }) {
-                        Text("ACCEPT")
-                            .font(.system(size: 16, weight: .black))
-                            .foregroundColor(brutalistDark)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                    }
-                    .buttonStyle(TactileButtonStyle())
-                }
-            }
-            .padding(32)
-        }
-        .padding(.horizontal, 24)
-    }
+
     
     private func gameOverDialog() -> some View {
         TactileGameOverModal(
