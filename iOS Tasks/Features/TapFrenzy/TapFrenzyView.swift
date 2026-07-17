@@ -284,7 +284,7 @@ struct TapFrenzyView: View {
                                         Text("FRENZY")
                                             .font(.system(size: 40, weight: .black))
                                             .italic()
-                                            .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255)) /
+                                            .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255))
                                     }
                                 }
                                 

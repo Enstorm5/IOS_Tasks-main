@@ -2,11 +2,13 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var notificationManager: NotificationManager
+    @EnvironmentObject var scoreManager: ScoreManager
     
     @AppStorage("reminderEnabled") private var reminderEnabled: Bool = false
     @AppStorage("reminderTimeInterval") private var reminderTimeInterval: Double = 0
     
     @State private var reminderDate: Date = Date()
+    @State private var showWipeAlert: Bool = false
     
     var body: some View {
         ZStack {
@@ -17,6 +19,7 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         reminderSection()
+                        dangerZoneSection()
                     }
                     .padding(20)
                 }
@@ -89,6 +92,36 @@ struct SettingsView: View {
                         updateSchedule()
                     }
                 }
+            }
+        }
+    }
+    
+    private func dangerZoneSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                tactileTitleAccent()
+                Text("DANGER ZONE")
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundColor(Color.red)
+            }
+            
+            Button(action: { showWipeAlert = true }) {
+                Text("WIPE ALL SCORES")
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+            }
+            .buttonStyle(TactileDynamicButtonStyle(color: .red))
+            .alert(isPresented: $showWipeAlert) {
+                Alert(
+                    title: Text("WIPE ALL DATA?"),
+                    message: Text("This will permanently delete all your game data."),
+                    primaryButton: .destructive(Text("Wipe Data")) {
+                        scoreManager.resetAllData()
+                    },
+                    secondaryButton: .cancel()
+                )
             }
         }
     }

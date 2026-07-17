@@ -146,4 +146,14 @@ class ScoreManager: ObservableObject {
             quizRushScores = decoded
         }
     }
+    
+    func resetAllData() {
+        tapFrenzyScores.removeAll()
+        lightItUpScores.removeAll()
+        quizRushScores.removeAll()
+        
+        userDefaults.removeObject(forKey: tapFrenzyKey)
+        userDefaults.removeObject(forKey: lightItUpKey)
+        userDefaults.removeObject(forKey: quizRushKey)
+    }
 }
