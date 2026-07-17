@@ -211,27 +211,23 @@ struct TapFrenzyView: View {
                                 HStack(spacing: 8) {
                                     tactileTitleAccent()
                                     
-                                    Text("TAP ")
-                                        .font(.system(size: 40, weight: .black))
-                                        .italic()
-                                        .foregroundColor(brutalistDark)
-                                    + Text("FRENZY")
-                                        .font(.system(size: 40, weight: .black))
-                                        .italic()
-                                        .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255)) // tertiary #ca8a04
+                                    HStack(spacing: 0) {
+                                        Text("TAP ")
+                                            .font(.system(size: 40, weight: .black))
+                                            .italic()
+                                            .foregroundColor(brutalistDark)
+                                        Text("FRENZY")
+                                            .font(.system(size: 40, weight: .black))
+                                            .italic()
+                                            .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255)) // tertiary #ca8a04
+                                    }
                                 }
                                 
                                 Rectangle().fill(brutalistDark).frame(width: 48, height: 3)
                             }
                             
                             // Body
-                            Text("Tap as fast as you can inside ")
-                                .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
-                            + Text("10 seconds")
-                                .font(.system(size: 17, weight: .black))
-                                .foregroundColor(brutalistDark)
-                            + Text(". Avoid penalty traps!")
+                            Text("Tap as fast as you can inside \(Text("10 seconds").font(.system(size: 17, weight: .black)).foregroundColor(brutalistDark)). Avoid penalty traps!")
                                 .font(.system(size: 17, weight: .semibold))
                                 .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
                             

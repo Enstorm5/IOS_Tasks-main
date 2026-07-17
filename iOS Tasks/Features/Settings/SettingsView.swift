@@ -69,7 +69,7 @@ struct SettingsView: View {
                 }
                 .tint(cautionYellow)
                 .padding(16)
-                .onChange(of: reminderEnabled) { enabled in
+                .onChange(of: reminderEnabled) { _, enabled in
                     handleToggleChange(enabled: enabled)
                 }
             }
@@ -84,7 +84,7 @@ struct SettingsView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(brutalistDark)
                     .padding(16)
-                    .onChange(of: reminderDate) { newDate in
+                    .onChange(of: reminderDate) { _, newDate in
                         reminderTimeInterval = newDate.timeIntervalSince1970
                         updateSchedule()
                     }

@@ -78,7 +78,7 @@ struct LightItUpView: View {
         .sheet(isPresented: $showSettings) {
             settingsView()
         }
-        .onChange(of: state.isGameOver) { isOver in
+        .onChange(of: state.isGameOver) { _, isOver in
             if isOver {
                 onGameFinish(state.score)
             }
