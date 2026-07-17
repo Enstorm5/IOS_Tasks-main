@@ -135,7 +135,7 @@ struct ContentView: View {
                 currentRoute: homeRouteBinding,
                 state: $tapFrenzyState,
                 onButtonTap: {
-                    tapFrenzyState = TapFrenzyReducer.reduce(currentState: tapFrenzyState, action: .bigButtonTapped)
+                    tapFrenzyState = TapFrenzyReducer.reduce(currentState: tapFrenzyState, action: .targetTapped(side: .center))
                 },
                 onGameAction: { action in
                     tapFrenzyState = TapFrenzyReducer.reduce(currentState: tapFrenzyState, action: action)

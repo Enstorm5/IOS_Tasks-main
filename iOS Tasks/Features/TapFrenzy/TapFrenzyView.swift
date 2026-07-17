@@ -138,46 +138,119 @@ struct TapFrenzyView: View {
                 .stroke(brutalistDark.opacity(0.05), lineWidth: 1)
                 .frame(width: 320, height: 320)
             
-            Button(action: onButtonTap) {
-                    ZStack {
-                        // Scanline effect
-                        Rectangle()
-                            .fill(brutalistDark.opacity(0.1))
-                            .frame(height: 2)
-                            .offset(y: scanlineOffset)
-                            .clipped()
-                        
-                        VStack {
-                            Text("TAP!")
-                                .font(.system(size: 40, weight: .black))
-                                .italic()
-                                .foregroundColor(brutalistDark)
-                                .tracking(-1)
-                            
-                            if state.currentButtonColor == .grey {
-                                Text("Penalty Active")
-                                    .font(.system(size: 11, weight: .black, design: .monospaced))
-                                    .foregroundColor(brutalistDark)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(cautionYellow.opacity(0.3))
-                                    .overlay(tactileCornerBrackets(color: cautionYellow))
-                                    .padding(.top, 16)
-                            }
-                        }
-                    }
-                    .frame(width: 256, height: 256)
-                .background(
-                    (state.currentButtonColor == .green ? Color.green.opacity(0.2) : panelBg)
-                        .border(brutalistDark, width: 2)
-                        .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
-                )
-                .overlay(tactileUIAccent(alignment: .topLeading))
-                .overlay(tactileUIAccent(alignment: .bottomTrailing))
+            if state.isSplitModeActive {
+                HStack(spacing: 16) {
+                    splitTargetButton(side: .left)
+                    splitTargetButton(side: .right)
+                }
+            } else {
+                singleTargetButton()
             }
-            .buttonStyle(PlainButtonStyle())
-
+            
+            if state.isGoldenTileActive {
+                goldenTileButton()
+                    .offset(state.goldenTileOffset)
+            }
         }
+    }
+    
+    func singleTargetButton() -> some View {
+        Button(action: { onGameAction(.targetTapped(side: .center)) }) {
+            ZStack {
+                // Scanline effect
+                Rectangle()
+                    .fill(brutalistDark.opacity(0.1))
+                    .frame(height: 2)
+                    .offset(y: scanlineOffset)
+                    .clipped()
+                
+                VStack {
+                    Text("TAP!")
+                        .font(.system(size: 40, weight: .black))
+                        .italic()
+                        .foregroundColor(brutalistDark)
+                        .tracking(-1)
+                    
+                    if state.currentButtonColor == .grey {
+                        Text("Penalty Active")
+                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .foregroundColor(brutalistDark)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.red.opacity(0.3))
+                            .overlay(tactileCornerBrackets(color: .red))
+                            .padding(.top, 16)
+                    }
+                }
+            }
+            .frame(width: 256, height: 256)
+            .background(
+                (state.currentButtonColor == .green ? Color.green.opacity(0.2) :
+                 (state.currentButtonColor == .grey ? Color.red.opacity(0.2) : panelBg))
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
+            )
+            .overlay(tactileUIAccent(alignment: .topLeading))
+            .overlay(tactileUIAccent(alignment: .bottomTrailing))
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    func splitTargetButton(side: TapSide) -> some View {
+        let isCorrect = (state.correctSplitSide == side)
+        let color = isCorrect ? state.currentButtonColor : .grey
+        
+        return Button(action: { onGameAction(.targetTapped(side: side)) }) {
+            ZStack {
+                Rectangle()
+                    .fill(brutalistDark.opacity(0.1))
+                    .frame(height: 2)
+                    .offset(y: scanlineOffset)
+                    .clipped()
+                
+                VStack {
+                    Text(side == .left ? "L" : "R")
+                        .font(.system(size: 40, weight: .black))
+                        .italic()
+                        .foregroundColor(brutalistDark)
+                        .tracking(-1)
+                }
+            }
+            .frame(width: 120, height: 256)
+            .background(
+                (color == .green ? Color.green.opacity(0.2) :
+                 (color == .grey ? Color.red.opacity(0.2) : panelBg))
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
+            )
+            .overlay(tactileUIAccent(alignment: .topLeading))
+            .overlay(tactileUIAccent(alignment: .bottomTrailing))
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    func goldenTileButton() -> some View {
+        Button(action: { onGameAction(.goldenTileTapped) }) {
+            ZStack {
+                Rectangle()
+                    .fill(brutalistDark.opacity(0.1))
+                    .frame(height: 2)
+                    .offset(y: scanlineOffset)
+                    .clipped()
+                
+                Text("+TIME")
+                    .font(.system(size: 16, weight: .black, design: .monospaced))
+                    .foregroundColor(brutalistDark)
+            }
+            .frame(width: 80, height: 80)
+            .background(
+                Color.yellow.opacity(0.5)
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+            )
+            .overlay(tactileCornerBrackets(color: .yellow))
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     // Start / Game Over Modal
