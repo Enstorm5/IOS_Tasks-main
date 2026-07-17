@@ -186,33 +186,30 @@ struct TapFrenzyView: View {
             Color(red: 226/255, green: 232/255, blue: 240/255).opacity(0.6) // surface-dim
                 .ignoresSafeArea()
             
-            TactileCard {
-                VStack(spacing: 0) {
-                    // Industrial Accent Bar
-                    HStack(spacing: 4) {
-                        Spacer()
-                        Rectangle().fill(brutalistDark).frame(width: 6, height: 6)
-                        Rectangle().fill(cautionYellow).frame(width: 6, height: 6).border(brutalistDark, width: 1)
-                    }
-                    .padding(.top, 16)
-                    .padding(.trailing, 16)
-                    
-                    VStack(spacing: 24) {
-                        // Title
-                        VStack(spacing: 8) {
-                            HStack(spacing: 8) {
-                                tactileTitleAccent()
-                                
-                                if state.isGameOver {
-                                    Text("GAME ")
-                                        .font(.system(size: 40, weight: .black))
-                                        .italic()
-                                        .foregroundColor(brutalistDark)
-                                    + Text("OVER")
-                                        .font(.system(size: 40, weight: .black))
-                                        .italic()
-                                        .foregroundColor(Color.red)
-                                } else {
+            if state.isGameOver {
+                TactileGameOverModal(
+                    score: state.score,
+                    onMenu: { currentRoute = .mainMenu },
+                    onPlayAgain: { onGameAction(.startOrRestartGame) }
+                )
+            } else {
+                TactileCard {
+                    VStack(spacing: 0) {
+                        // Industrial Accent Bar
+                        HStack(spacing: 4) {
+                            Spacer()
+                            Rectangle().fill(brutalistDark).frame(width: 6, height: 6)
+                            Rectangle().fill(cautionYellow).frame(width: 6, height: 6).border(brutalistDark, width: 1)
+                        }
+                        .padding(.top, 16)
+                        .padding(.trailing, 16)
+                        
+                        VStack(spacing: 24) {
+                            // Title
+                            VStack(spacing: 8) {
+                                HStack(spacing: 8) {
+                                    tactileTitleAccent()
+                                    
                                     Text("TAP ")
                                         .font(.system(size: 40, weight: .black))
                                         .italic()
@@ -222,17 +219,11 @@ struct TapFrenzyView: View {
                                         .italic()
                                         .foregroundColor(Color(red: 202/255, green: 138/255, blue: 4/255)) // tertiary #ca8a04
                                 }
+                                
+                                Rectangle().fill(brutalistDark).frame(width: 48, height: 3)
                             }
                             
-                            Rectangle().fill(brutalistDark).frame(width: 48, height: 3)
-                        }
-                        
-                        // Body
-                        if state.isGameOver {
-                            Text("Final Score: \(state.score)")
-                                .font(.system(size: 24, weight: .black))
-                                .foregroundColor(brutalistDark)
-                        } else {
+                            // Body
                             Text("Tap as fast as you can inside ")
                                 .font(.system(size: 17, weight: .semibold))
                                 .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
@@ -242,44 +233,31 @@ struct TapFrenzyView: View {
                             + Text(". Avoid penalty traps!")
                                 .font(.system(size: 17, weight: .semibold))
                                 .foregroundColor(Color(red: 71/255, green: 85/255, blue: 105/255))
-                        }
-                        
-                        // Action Buttons
-                        VStack(spacing: 16) {
-                            Button(action: { onGameAction(.startOrRestartGame) }) {
-                                HStack(spacing: 12) {
-                                    Text(state.isGameOver ? "PLAY AGAIN" : "START GAME")
-                                        .font(.system(size: 22, weight: .black))
-                                        .italic()
-                                        .tracking(-1)
-                                    
-                                    Image(systemName: "play.fill")
-                                }
-                                .foregroundColor(brutalistDark)
-                                .padding(.vertical, 20)
-                                .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(TactileButtonStyle())
                             
-                            if state.isGameOver {
-                                Button(action: { currentRoute = .mainMenu }) {
-                                    Text("MAIN MENU")
-                                        .font(.system(size: 16, weight: .black))
-                                        .italic()
-                                        .tracking(-1)
-                                        .foregroundColor(brutalistDark)
-                                        .padding(.vertical, 16)
-                                        .frame(maxWidth: .infinity)
+                            // Action Buttons
+                            VStack(spacing: 16) {
+                                Button(action: { onGameAction(.startOrRestartGame) }) {
+                                    HStack(spacing: 12) {
+                                        Text("START GAME")
+                                            .font(.system(size: 22, weight: .black))
+                                            .italic()
+                                            .tracking(-1)
+                                        
+                                        Image(systemName: "play.fill")
+                                    }
+                                    .foregroundColor(brutalistDark)
+                                    .padding(.vertical, 20)
+                                    .frame(maxWidth: .infinity)
                                 }
-                                .buttonStyle(TactileSecondaryButtonStyle())
+                                .buttonStyle(TactileButtonStyle())
                             }
                         }
+                        .padding(.horizontal, 32)
+                        .padding(.bottom, 32)
                     }
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 32)
                 }
+                .padding(24)
             }
-            .padding(24)
         }
     }
     

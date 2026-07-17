@@ -128,3 +128,58 @@ struct TactileSecondaryButtonStyle: ButtonStyle {
     }
 }
 
+/// A unified game over modal to be used across all games
+struct TactileGameOverModal: View {
+    let score: Int
+    let onMenu: () -> Void
+    let onPlayAgain: () -> Void
+    
+    var body: some View {
+        TactileCard {
+            VStack(spacing: 24) {
+                Text("ROUND OVER")
+                    .font(.system(size: 28, weight: .black))
+                    .foregroundColor(.red)
+                
+                VStack(spacing: 4) {
+                    Text("\(score)")
+                        .font(.system(size: 64, weight: .black))
+                        .foregroundColor(brutalistDark)
+                    Text("FINAL SCORE")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color.gray)
+                }
+                
+                HStack(spacing: 12) {
+                    Button(action: onMenu) {
+                        Text("MENU")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundColor(brutalistDark)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                    }
+                    .background(
+                        Color.white
+                            .border(brutalistDark, width: 2)
+                            .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
+                    )
+                    
+                    Button(action: onPlayAgain) {
+                        Text("PLAY AGAIN")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                    }
+                    .background(
+                        Color.green
+                            .border(brutalistDark, width: 2)
+                            .shadow(color: brutalistDark, radius: 0, x: 4, y: 4)
+                    )
+                }
+            }
+            .padding(32)
+        }
+        .padding(.horizontal, 24)
+    }
+}

@@ -284,34 +284,14 @@ struct QuizRushView: View {
     
     private func resultsView() -> some View {
         VStack(spacing: 32) {
-            TactileCard {
-                VStack(spacing: 16) {
-                    Text("QUIZ COMPLETE")
-                        .font(.system(size: 28, weight: .black))
-                        .foregroundColor(brutalistDark)
-                    
-                    Text("FINAL SCORE")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(Color.gray)
-                    
-                    Text("\(state.score)")
-                        .font(.system(size: 64, weight: .black))
-                        .foregroundColor(brutalistDark)
+            TactileGameOverModal(
+                score: state.score,
+                onMenu: { currentRoute = .mainMenu },
+                onPlayAgain: {
+                    state = QuizRushReducer.reduce(currentState: state, action: .randomizeSetup)
+                    state.viewState = .setup // Hard override to go back to setup UI properly
                 }
-                .padding(32)
-                .frame(maxWidth: .infinity)
-            }
-            
-            Button(action: {
-                currentRoute = .mainMenu
-            }) {
-                Text("MAIN MENU")
-                    .font(.system(size: 20, weight: .black))
-                    .foregroundColor(brutalistDark)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
-            }
-            .buttonStyle(TactileButtonStyle())
+            )
         }
         .onAppear {
             onGameFinish(state.score)
