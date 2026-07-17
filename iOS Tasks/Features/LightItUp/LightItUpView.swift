@@ -26,7 +26,7 @@ struct LightItUpView: View {
                         
                         Spacer(minLength: 40)
                     }
-                    .padding(.top, 100) /
+                    .padding(.top, 100)
                 }
             }
             .blur(radius: (state.isGameOver || !state.isPlaying) ? 10 : 0)
@@ -63,7 +63,7 @@ struct LightItUpView: View {
                 )
             }
             
-            // Pattern Result Banner
+          
             if state.isShowingPatternResult {
                 TactileBanner(
                     text: state.patternResultSuccess ? "SUCCESS!" : "FAILED!",
@@ -76,7 +76,7 @@ struct LightItUpView: View {
             
             
             if state.isGameOver {
-                Color.white.opacity(0.6).ignoresSafeArea() // dim background
+                Color.white.opacity(0.6).ignoresSafeArea() 
                 gameOverDialog()
             }
         }

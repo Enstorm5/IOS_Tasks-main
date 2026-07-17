@@ -91,7 +91,7 @@ struct TapFrenzyView: View {
                     .foregroundColor(brutalistDark)
             }
             
-           
+            VStack(spacing: 12) {
                 HStack(alignment: .bottom) {
                     Text("TIMER_REMAINING")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
