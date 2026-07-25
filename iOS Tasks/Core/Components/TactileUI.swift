@@ -1,12 +1,13 @@
 import SwiftUI
 
+// MARK: - Color Palette
 
-let brutalistDark = Color(red: 15/255, green: 23/255, blue: 42/255) // #0F172A
-let brutalistBg = Color(red: 248/255, green: 250/255, blue: 252/255) // #F8FAFC
-let panelBg = Color(red: 241/255, green: 245/255, blue: 249/255) // #F1F5F9
-let cautionYellow = Color(red: 250/255, green: 204/255, blue: 21/255) // #FACC15
+let brutalistDark = Color(red: 15/255, green: 23/255, blue: 42/255)
+let brutalistBg = Color(red: 248/255, green: 250/255, blue: 252/255)
+let panelBg = Color(red: 241/255, green: 245/255, blue: 249/255)
+let cautionYellow = Color(red: 250/255, green: 204/255, blue: 21/255)
 
-
+// MARK: - Custom Views & Backgrounds
 
 func tactilePixelBackground() -> some View {
     Canvas { context, size in
@@ -28,29 +29,25 @@ func tactilePixelBackground() -> some View {
 func tactileCornerBrackets(color: Color) -> some View {
     GeometryReader { geo in
         Path { path in
-    
             path.move(to: CGPoint(x: 6, y: 0))
             path.addLine(to: CGPoint(x: 0, y: 0))
             path.addLine(to: CGPoint(x: 0, y: 6))
-            
             
             path.move(to: CGPoint(x: geo.size.width - 6, y: 0))
             path.addLine(to: CGPoint(x: geo.size.width, y: 0))
             path.addLine(to: CGPoint(x: geo.size.width, y: 6))
             
-         
             path.move(to: CGPoint(x: 6, y: geo.size.height))
             path.addLine(to: CGPoint(x: 0, y: geo.size.height))
             path.addLine(to: CGPoint(x: 0, y: geo.size.height - 6))
             
-     
             path.move(to: CGPoint(x: geo.size.width - 6, y: geo.size.height))
             path.addLine(to: CGPoint(x: geo.size.width, y: geo.size.height))
             path.addLine(to: CGPoint(x: geo.size.width, y: geo.size.height - 6))
         }
         .stroke(color, lineWidth: 3)
     }
-    .padding(-4) 
+    .padding(-4)
 }
 
 func tactileUIAccent(alignment: Alignment) -> some View {
@@ -69,9 +66,6 @@ func tactileUIAccent(alignment: Alignment) -> some View {
         .stroke(brutalistDark, lineWidth: 1.5)
     }
 }
-
-
-
 
 struct TactileCard<Content: View>: View {
     let content: Content
@@ -99,7 +93,7 @@ func tactileTitleAccent() -> some View {
         .border(brutalistDark, width: 1)
 }
 
-
+// MARK: - Button Styles
 
 struct TactileButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -150,26 +144,6 @@ struct TactileDynamicButtonStyle: ButtonStyle {
     }
 }
 
-
-
-struct TactileBadgeModifier: ViewModifier {
-    var color: Color
-    func body(content: Content) -> some View {
-        content
-            .background(
-                color
-                    .border(brutalistDark, width: 2)
-                    .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
-            )
-    }
-}
-
-extension View {
-    func tactileBadge(color: Color = cautionYellow) -> some View {
-        self.modifier(TactileBadgeModifier(color: color))
-    }
-}
-
 struct TactileIconButtonStyle: ButtonStyle {
     var isSelected: Bool = false
     func makeBody(configuration: Configuration) -> some View {
@@ -195,6 +169,28 @@ struct TactileSegmentButtonStyle: ButtonStyle {
             .offset(x: configuration.isPressed ? 2 : 0, y: configuration.isPressed ? 2 : 0)
     }
 }
+
+// MARK: - View Modifiers
+
+struct TactileBadgeModifier: ViewModifier {
+    var color: Color
+    func body(content: Content) -> some View {
+        content
+            .background(
+                color
+                    .border(brutalistDark, width: 2)
+                    .shadow(color: brutalistDark, radius: 0, x: 3, y: 3)
+            )
+    }
+}
+
+extension View {
+    func tactileBadge(color: Color = cautionYellow) -> some View {
+        self.modifier(TactileBadgeModifier(color: color))
+    }
+}
+
+// MARK: - Modals & Banners
 
 struct TactileGameOverModal: View {
     let score: Int
@@ -256,8 +252,6 @@ struct TactileGameOverModal: View {
     }
 }
 
-
-
 struct TactileBanner: View {
     let text: String
     var textColor: Color = .white
@@ -286,3 +280,4 @@ struct TactileBanner: View {
             .zIndex(10)
     }
 }
+

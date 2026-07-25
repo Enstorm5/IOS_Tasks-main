@@ -28,7 +28,7 @@ class ScoreManager: ObservableObject {
     }
     
     func addScore(_ score: Int, for route: GameRoute, location: CLLocation? = nil) {
-        // Removed guard score > 0 to allow testing with 0 score
+        
         
         let entry = ScoreEntry(
             score: score,
