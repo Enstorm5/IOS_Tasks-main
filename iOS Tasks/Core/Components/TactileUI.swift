@@ -1,13 +1,12 @@
 import SwiftUI
 
-// MARK: - Color Palette
+//Colors
 
 let brutalistDark = Color(red: 15/255, green: 23/255, blue: 42/255)
 let brutalistBg = Color(red: 248/255, green: 250/255, blue: 252/255)
 let panelBg = Color(red: 241/255, green: 245/255, blue: 249/255)
 let cautionYellow = Color(red: 250/255, green: 204/255, blue: 21/255)
 
-// MARK: - Custom Views & Backgrounds
 
 func tactilePixelBackground() -> some View {
     Canvas { context, size in
@@ -93,7 +92,6 @@ func tactileTitleAccent() -> some View {
         .border(brutalistDark, width: 1)
 }
 
-// MARK: - Button Styles
 
 struct TactileButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -170,7 +168,6 @@ struct TactileSegmentButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - View Modifiers
 
 struct TactileBadgeModifier: ViewModifier {
     var color: Color
@@ -190,7 +187,7 @@ extension View {
     }
 }
 
-// MARK: - Modals & Banners
+
 
 struct TactileGameOverModal: View {
     let score: Int
